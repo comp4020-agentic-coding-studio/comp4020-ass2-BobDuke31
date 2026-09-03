@@ -1,0 +1,87 @@
+---
+// Ambient, site-wide: how much of the run map has been explored. Mounted
+// once each in CourseContentLayout and PageLayout so every page carries it,
+// rather than as a one-off homepage widget. Self-contained: it works out
+// whether the current page is a run from the URL, so no page needs to call
+// it explicitly.
+---
+
+<fs-run-progress>
+  <div class="fs-run-progress-track" aria-hidden="true">
+    <div class="fs-run-progress-fill"></div>
+  </div>
+  <p class="fs-run-progress-label" aria-live="polite"></p>
+</fs-run-progress>
+
+<style>
+  fs-run-progress {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: block;
+    background: var(--at-bg, canvas);
+  }
+
+  .fs-run-progress-track {
+    height: 3px;
+    background: var(--fs-spent);
+  }
+
+  .fs-run-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--fs-success);
+    transition: width var(--fs-slow, 900ms) var(--fs-ease, ease);
+  }
+
+  .fs-run-progress-label {
+    margin: 0;
+    padding: 0.15rem 1rem;
+    font-size: 0.75rem;
+    color: var(--at-text-secondary);
+    text-align: end;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fs-run-progress-fill {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { getVisitedRuns, markCurrentPageVisited, RUN_STATE_EVENT, TOTAL_RUNS } from "../scripts/run-state";
+
+  class RunProgress extends HTMLElement {
+    #fill: HTMLElement | null = null;
+    #label: HTMLElement | null = null;
+
+    connectedCallback() {
+      this.#fill = this.querySelector(".fs-run-progress-fill");
+      this.#label = this.querySelector(".fs-run-progress-label");
+      this.render();
+      markCurrentPageVisited();
+
+      window.addEventListener(RUN_STATE_EVENT, () => this.render());
+      document.addEventListener("astro:page-load", () => {
+        markCurrentPageVisited();
+        this.render();
+      });
+    }
+
+    render() {
+      const count = getVisitedRuns().size;
+      if (this.#fill) this.#fill.style.width = `${(count / TOTAL_RUNS) * 100}%`;
+      if (this.#label) {
+        this.#label.textContent =
+          count === 0
+            ? "No runs explored yet"
+            : `${count} of ${TOTAL_RUNS} runs explored`;
+      }
+    }
+  }
+
+  if (!customElements.get("fs-run-progress")) {
+    customElements.define("fs-run-progress", RunProgress);
+  }
+</script>

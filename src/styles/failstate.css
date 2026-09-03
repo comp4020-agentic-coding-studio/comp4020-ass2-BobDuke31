@@ -1,0 +1,112 @@
+/* Shared design tokens for Fail States' interactive layer.
+ *
+ * The brand palette (--at-primary/secondary/tertiary) is fixed by
+ * astro-theme-slop and stays untouched — everything here is motion,
+ * feedback and texture layered on top of it, not a replacement for it.
+ * One file, imported once in PageLayout.astro, so every page and every
+ * bespoke component (LiveDemo, RunMap, LivesStrip, the nav run-progress
+ * indicator) shares the same feel instead of reinventing it.
+ */
+
+:root {
+  --fs-fast: 120ms;
+  --fs-medium: 320ms;
+  --fs-slow: 900ms;
+  --fs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --fs-danger: #a3402c;
+  --fs-success: var(--at-primary);
+  --fs-spent: color-mix(in srgb, var(--at-tertiary) 60%, transparent);
+}
+
+@keyframes fs-shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes fs-flash {
+  from {
+    box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--fs-success) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes fs-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes fs-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fs-shake {
+  animation: fs-shake var(--fs-medium) var(--fs-ease);
+}
+
+.fs-flash {
+  animation: fs-flash var(--fs-slow) var(--fs-ease);
+}
+
+.fs-pulse {
+  animation: fs-pulse 1.6s ease-in-out infinite;
+}
+
+/* Applied by the shared reveal-on-scroll script (src/scripts/reveal.ts) once
+   an element crosses the viewport. Elements start hidden only when JS can
+   run at all --- see the script for the no-JS fallback. */
+.fs-reveal-ready {
+  opacity: 0;
+}
+
+.fs-reveal-in {
+  animation: fs-reveal var(--fs-medium) var(--fs-ease) both;
+}
+
+:is(a, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--at-primary);
+  outline-offset: 2px;
+  transition: outline-offset var(--fs-fast) var(--fs-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fs-shake,
+  .fs-flash,
+  .fs-pulse,
+  .fs-reveal-in {
+    animation: none !important;
+  }
+
+  .fs-reveal-ready {
+    opacity: 1;
+  }
+}

@@ -1,4 +1,8 @@
 ---
+// The weighted-criteria table stays the accessible source of truth; the
+// segmented bar above it is a hover-interactive restatement of the same
+// numbers, not a replacement for them --- so the assessments page, normally
+// the most static page on a course site, gets read through use as well.
 interface WeightedMarking {
   mode: "weighted";
   criteria: { name: string; weight: number }[];
@@ -14,20 +18,121 @@ interface Props {
 }
 
 const { marking } = Astro.props;
+const palette = ["--at-primary", "--at-secondary", "--at-tertiary"];
 ---
 
 <section aria-labelledby="how-marked">
   <h2 id="how-marked">How it is marked</h2>
-  {marking.mode === "holistic" ? (
-    <p>{marking.description}</p>
-  ) : (
-    <table>
-      <thead><tr><th scope="col">Criterion</th><th scope="col">Weight</th></tr></thead>
-      <tbody>
-        {marking.criteria.map((criterion) => (
-          <tr><td>{criterion.name}</td><td>{criterion.weight}%</td></tr>
-        ))}
-      </tbody>
-    </table>
-  )}
+  {
+    marking.mode === "holistic" ? (
+      <p>{marking.description}</p>
+    ) : (
+      <>
+        <fs-weight-bar class="fs-weight-bar" aria-hidden="true">
+          {marking.criteria.map((criterion, i) => (
+            <button
+              type="button"
+              class="fs-weight-segment"
+              style={`--fs-segment-weight:${criterion.weight};--fs-segment-color:var(${palette[i % palette.length]})`}
+              data-name={criterion.name}
+              data-weight={criterion.weight}
+            >
+              <span class="fs-weight-segment-label">{criterion.weight}%</span>
+            </button>
+          ))}
+        </fs-weight-bar>
+        <p class="fs-weight-callout" data-role="callout" aria-live="polite">
+          Hover or tab through the bar to see each criterion.
+        </p>
+        <table>
+          <caption class="sr-only">Marking criteria and their weight</caption>
+          <thead>
+            <tr>
+              <th scope="col">Criterion</th>
+              <th scope="col">Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            {marking.criteria.map((criterion) => (
+              <tr>
+                <td>{criterion.name}</td>
+                <td>{criterion.weight}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    )
+  }
 </section>
+
+<style>
+  .fs-weight-bar {
+    display: flex;
+    width: 100%;
+    height: 3rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-block: 1rem 0.5rem;
+  }
+
+  .fs-weight-segment {
+    flex-grow: var(--fs-segment-weight);
+    flex-basis: 0;
+    background: var(--fs-segment-color);
+    border: none;
+    border-inline-end: 2px solid var(--at-bg-alt);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    transition: flex-grow var(--fs-medium, 320ms) var(--fs-ease, ease), transform var(--fs-fast, 120ms);
+  }
+
+  .fs-weight-segment:hover,
+  .fs-weight-segment:focus-visible {
+    flex-grow: calc(var(--fs-segment-weight) * 1.15);
+    transform: scaleY(1.08);
+  }
+
+  .fs-weight-segment-label {
+    font-size: 0.85rem;
+  }
+
+  .fs-weight-callout {
+    min-height: 1.4em;
+    color: var(--at-text-secondary);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  class WeightBar extends HTMLElement {
+    connectedCallback() {
+      const callout = this.parentElement?.querySelector<HTMLElement>('[data-role="callout"]');
+      const segments = this.querySelectorAll<HTMLButtonElement>(".fs-weight-segment");
+      segments.forEach((segment) => {
+        const say = () => {
+          if (!callout) return;
+          callout.textContent = `${segment.dataset.name}: ${segment.dataset.weight}% of this assessment.`;
+        };
+        segment.addEventListener("mouseenter", say);
+        segment.addEventListener("focus", say);
+      });
+    }
+  }
+
+  if (!customElements.get("fs-weight-bar")) {
+    customElements.define("fs-weight-bar", WeightBar);
+  }
+</script>

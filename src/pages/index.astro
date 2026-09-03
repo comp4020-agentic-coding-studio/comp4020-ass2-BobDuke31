@@ -1,43 +1,46 @@
 ---
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
-import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
-import heroImage from "../assets/images/hero-home.avif";
+import ContentLayout from "../layouts/CourseContentLayout.astro";
+import LivesStrip from "../components/LivesStrip.astro";
 import { courseMeta } from "../course-config";
 import { sessionLabels, siteConfig } from "../site-config";
-
-// STARTER_CONTENT: replace the hero artwork and its alt text below, then
-// remove this comment.
 ---
 
 <ContentLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
-  heroImage={heroImage}
-  heroImageAlt="A lecture theatre reduced to flat gold and black shapes, rows of seats sweeping past the frame, in a two-ink risograph print"
   {...siteConfig}
 >
+  <LivesStrip lives={3} spent={1} />
+
   <ul class="course-tags" aria-label="Course tags">
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 
-  <!-- STARTER_CONTENT: replace the authored page below, then remove this comment. -->
   <h2>What you will do</h2>
   <p>
-    Say what a student spends their time on — the making, reading, arguing or
-    measuring that fills the weeks. Name the artefact they walk out with.
+    Every week you take apart one way a game can make you lose, and put it
+    back together with the reasoning showing. You will read failure design
+    the way a critic reads a shot list: checkpoints, lives, permadeath and
+    difficulty curves as deliberate choices with consequences, not as
+    inconveniences the designer forgot to remove. By the end of semester you
+    design and justify a fail state of your own.
   </p>
 
   <h2>Who it is for</h2>
   <p>
-    Say who this is aimed at and what they need to already know. Be specific
-    enough that someone can rule themselves in or out without emailing you.
+    Anyone who has rage-quit a game and then reopened it thirty seconds
+    later, and wants the vocabulary for why. No engine or programming
+    experience is assumed — the object of study is the feeling of losing,
+    not the code that produces it — but you should already be a player, in
+    something, sometimes badly.
   </p>
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>
     <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The weekly schedule and what happens in each teaching session.</p>
+      <p>The run map: twelve weeks of failure design, in order.</p>
     </Card>
     <Card title="Assessment" href="/assessments/">
       <p>What is marked, what it is worth, and when it is due.</p>

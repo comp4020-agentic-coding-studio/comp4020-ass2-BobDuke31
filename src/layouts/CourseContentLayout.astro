@@ -1,0 +1,19 @@
+---
+// Every detail/listing page (sessions, lectures, assessments, people, the
+// homepage) builds on astro-theme-university's ContentLayout directly. This
+// thin wrapper is where site-wide chrome that ContentLayout has no slot for
+// gets mounted exactly once, the same way PageLayout.astro wraps
+// MdxPageLayout for the plain content pages.
+import ContentLayout, {
+  type ContentLayoutProps,
+} from "astro-theme-university/layouts/ContentLayout.astro";
+import RunProgress from "../components/RunProgress.astro";
+import "../styles/failstate.css";
+
+type Props = ContentLayoutProps;
+---
+
+<ContentLayout {...Astro.props}>
+  <RunProgress />
+  <slot />
+</ContentLayout>

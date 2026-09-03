@@ -1,0 +1,396 @@
+---
+// One reusable "trigger, outcome, feedback" toy, reused with different
+// content at three points in the course rather than three bespoke widgets.
+// Each `mode` demonstrates that week's own thesis by making the reader
+// cause a failure and watch the design respond to it, live.
+interface Props {
+  mode: "checkpoint" | "assist" | "juice";
+  heading?: string;
+}
+
+const { mode, heading } = Astro.props;
+
+const defaultHeading: Record<Props["mode"], string> = {
+  checkpoint: "Try it: two respawn policies, one hazard",
+  assist: "Try it: the same timing window, with and without assistance",
+  juice: "Try it: identical outcome, two different feedback treatments",
+};
+---
+
+<fs-live-demo data-mode={mode} class="fs-demo">
+  <h3>{heading ?? defaultHeading[mode]}</h3>
+
+  {
+    mode === "checkpoint" && (
+      <>
+        <div class="fs-demo-stage" data-role="stage">
+          <div class="fs-demo-track">
+            <div class="fs-demo-checkpoint-flag" style="left:45%" title="Checkpoint" />
+            <div class="fs-demo-hazard" style="left:78%" aria-hidden="true">
+              ⚠
+            </div>
+            <div class="fs-demo-marker" data-role="marker" />
+          </div>
+        </div>
+        <div class="fs-demo-controls">
+          <fieldset>
+            <legend>Respawn policy</legend>
+            <label>
+              <input type="radio" name={`policy-${mode}`} value="start" checked /> Punishing —
+              back to the start
+            </label>
+            <label>
+              <input type="radio" name={`policy-${mode}`} value="checkpoint" /> Generous — back
+              to the last flag
+            </label>
+          </fieldset>
+          <button type="button" data-action="attempt">
+            Attempt the run
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  {
+    mode === "assist" && (
+      <>
+        <div class="fs-demo-stage" data-role="stage">
+          <div class="fs-demo-timing-track" data-role="track">
+            <div class="fs-demo-target-zone" data-role="zone" />
+            <div class="fs-demo-cursor" data-role="cursor" />
+          </div>
+        </div>
+        <div class="fs-demo-controls">
+          <label class="fs-demo-toggle">
+            <input type="checkbox" data-role="assist-toggle" /> Assist Mode: widen the window and
+            slow the timing
+          </label>
+          <button type="button" data-action="jump">
+            Jump
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  {
+    mode === "juice" && (
+      <>
+        <div class="fs-demo-stage" data-role="stage">
+          <div class="fs-demo-block" data-role="block">
+            ▮
+          </div>
+        </div>
+        <div class="fs-demo-controls">
+          <label class="fs-demo-toggle">
+            <input type="checkbox" data-role="juice-toggle" checked /> Juice on: shake, flash and
+            pulse feedback
+          </label>
+          <button type="button" data-action="break">
+            Break the block
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  <p class="fs-demo-status" data-role="status" aria-live="polite">
+    {
+      mode === "checkpoint" &&
+        "Choose a respawn policy, then attempt the run. The hazard doesn't move."
+    }
+    {mode === "assist" && "Press Jump when the cursor is inside the zone."}
+    {mode === "juice" && "Same action, same outcome — only the feedback changes."}
+  </p>
+  <p class="fs-demo-stats" data-role="stats" aria-live="off"></p>
+</fs-live-demo>
+
+<style>
+  .fs-demo {
+    display: block;
+    margin: 1.75rem 0;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid color-mix(in srgb, var(--at-tertiary) 40%, transparent);
+    border-radius: 0.75rem;
+    background: var(--at-bg-alt);
+  }
+
+  .fs-demo h3 {
+    margin-top: 0;
+  }
+
+  .fs-demo-stage {
+    position: relative;
+    padding: 1.5rem 0;
+  }
+
+  .fs-demo-track,
+  .fs-demo-timing-track {
+    position: relative;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--at-tertiary) 20%, transparent);
+    overflow: visible;
+  }
+
+  .fs-demo-checkpoint-flag {
+    position: absolute;
+    top: -0.6rem;
+    width: 2px;
+    height: calc(100% + 1.2rem);
+    background: var(--fs-success);
+  }
+
+  .fs-demo-hazard {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+  }
+
+  .fs-demo-marker,
+  .fs-demo-cursor {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--at-primary);
+    transform: translate(-50%, -50%);
+  }
+
+  .fs-demo-cursor {
+    animation: fs-demo-sweep 1.1s linear infinite alternate;
+  }
+
+  fs-live-demo[data-assist="true"] .fs-demo-cursor {
+    animation-duration: 2.4s;
+  }
+
+  @keyframes fs-demo-sweep {
+    from {
+      left: 2%;
+    }
+    to {
+      left: 98%;
+    }
+  }
+
+  .fs-demo-target-zone {
+    position: absolute;
+    top: 0;
+    left: 55%;
+    width: 12%;
+    height: 100%;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fs-success) 30%, transparent);
+    transition: width var(--fs-medium, 320ms) var(--fs-ease, ease);
+  }
+
+  fs-live-demo[data-assist="true"] .fs-demo-target-zone {
+    width: 32%;
+    left: 42%;
+  }
+
+  .fs-demo-block {
+    display: inline-block;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--at-primary);
+    transition: opacity var(--fs-fast, 120ms) var(--fs-ease, ease);
+  }
+
+  .fs-demo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-block: 1rem;
+  }
+
+  .fs-demo-controls fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .fs-demo-controls legend {
+    font-weight: 600;
+    padding: 0;
+  }
+
+  .fs-demo-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fs-demo-status {
+    min-height: 1.4em;
+    font-weight: 600;
+  }
+
+  .fs-demo-stats {
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fs-demo-cursor {
+      animation: none;
+      left: 61%;
+    }
+  }
+</style>
+
+<script>
+  import "../styles/failstate.css";
+
+  class LiveDemo extends HTMLElement {
+    attempts = 0;
+    successes = 0;
+    marker = 0;
+
+    connectedCallback() {
+      const mode = this.dataset.mode;
+      if (mode === "checkpoint") this.setupCheckpoint();
+      if (mode === "assist") this.setupAssist();
+      if (mode === "juice") this.setupJuice();
+    }
+
+    status(text: string) {
+      const el = this.querySelector<HTMLElement>('[data-role="status"]');
+      if (el) el.textContent = text;
+    }
+
+    stats(text: string) {
+      const el = this.querySelector<HTMLElement>('[data-role="stats"]');
+      if (el) el.textContent = text;
+    }
+
+    flash() {
+      const stage = this.querySelector<HTMLElement>('[data-role="stage"]');
+      if (!stage) return;
+      stage.classList.remove("fs-shake", "fs-flash");
+      // Force reflow so the animation can restart on repeated failures.
+      void stage.offsetWidth;
+      stage.classList.add("fs-shake", "fs-flash");
+    }
+
+    setupCheckpoint() {
+      const marker = this.querySelector<HTMLElement>('[data-role="marker"]');
+      const button = this.querySelector<HTMLButtonElement>('[data-action="attempt"]');
+      const hazardAt = 78;
+      const checkpointAt = 45;
+      let deaths = 0;
+
+      const place = (pct: number) => {
+        if (marker) marker.style.left = `${pct}%`;
+      };
+
+      button?.addEventListener("click", () => {
+        if (!marker || button.disabled) return;
+        button.disabled = true;
+        place(hazardAt);
+        window.setTimeout(() => {
+          const died = Math.random() < 0.6;
+          if (died) {
+            deaths += 1;
+            this.flash();
+            const policy = this.querySelector<HTMLInputElement>(
+              'input[name^="policy"]:checked',
+            )?.value;
+            const respawnAt = policy === "checkpoint" ? checkpointAt : 0;
+            place(respawnAt);
+            this.status(
+              policy === "checkpoint"
+                ? "Hit the hazard. Generous policy: back to the last flag."
+                : "Hit the hazard. Punishing policy: back to the very start.",
+            );
+          } else {
+            place(100);
+            this.status("Cleared the run this time.");
+          }
+          this.attempts += 1;
+          this.stats(`${this.attempts} attempt${this.attempts === 1 ? "" : "s"} · ${deaths} death${deaths === 1 ? "" : "s"}`);
+          button.disabled = false;
+        }, 700);
+      });
+    }
+
+    setupAssist() {
+      const toggle = this.querySelector<HTMLInputElement>('[data-role="assist-toggle"]');
+      const track = this.querySelector<HTMLElement>('[data-role="track"]');
+      const cursor = this.querySelector<HTMLElement>('[data-role="cursor"]');
+      const zone = this.querySelector<HTMLElement>('[data-role="zone"]');
+      const button = this.querySelector<HTMLButtonElement>('[data-action="jump"]');
+
+      toggle?.addEventListener("change", () => {
+        this.toggleAttribute("data-assist", toggle.checked);
+        this.dataset.assist = toggle.checked ? "true" : "false";
+      });
+
+      button?.addEventListener("click", () => {
+        if (!track || !cursor || !zone) return;
+        const trackBox = track.getBoundingClientRect();
+        const cursorBox = cursor.getBoundingClientRect();
+        const zoneBox = zone.getBoundingClientRect();
+        const cursorCentre = cursorBox.left + cursorBox.width / 2;
+        const hit = cursorCentre >= zoneBox.left && cursorCentre <= zoneBox.right;
+        void trackBox;
+        this.attempts += 1;
+        if (hit) {
+          this.successes += 1;
+          this.status("Clean hit.");
+          const stage = this.querySelector<HTMLElement>('[data-role="stage"]');
+          stage?.classList.add("fs-pulse");
+          window.setTimeout(() => stage?.classList.remove("fs-pulse"), 400);
+        } else {
+          this.status("Missed — try again.");
+          this.flash();
+        }
+        const rate = Math.round((this.successes / this.attempts) * 100);
+        this.stats(`${this.successes}/${this.attempts} hits (${rate}%)`);
+      });
+    }
+
+    setupJuice() {
+      const toggle = this.querySelector<HTMLInputElement>('[data-role="juice-toggle"]');
+      const block = this.querySelector<HTMLElement>('[data-role="block"]');
+      const stage = this.querySelector<HTMLElement>('[data-role="stage"]');
+      const button = this.querySelector<HTMLButtonElement>('[data-action="break"]');
+      let breaks = 0;
+
+      button?.addEventListener("click", () => {
+        if (!block) return;
+        breaks += 1;
+        const juiced = toggle?.checked ?? true;
+        if (juiced) {
+          stage?.classList.remove("fs-shake");
+          void stage?.offsetWidth;
+          stage?.classList.add("fs-shake");
+          block.classList.remove("fs-flash");
+          void block.offsetWidth;
+          block.classList.add("fs-flash");
+          this.status("Impact! Same block, felt.");
+        } else {
+          this.status("The block is gone. That's the whole event.");
+        }
+        block.style.opacity = "0";
+        window.setTimeout(() => {
+          block.style.opacity = "1";
+        }, 350);
+        this.stats(`${breaks} break${breaks === 1 ? "" : "s"} so far`);
+      });
+    }
+  }
+
+  if (!customElements.get("fs-live-demo")) {
+    customElements.define("fs-live-demo", LiveDemo);
+  }
+</script>

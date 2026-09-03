@@ -1,8 +1,11 @@
 ---
 import MdxPageLayout from "astro-theme-university/layouts/MdxPageLayout.astro";
+import RunProgress from "../components/RunProgress.astro";
 import { siteConfig } from "../site-config";
+import "../styles/failstate.css";
 ---
 
 <MdxPageLayout siteConfig={siteConfig} {...Astro.props}>
+  <RunProgress />
   <slot />
 </MdxPageLayout>

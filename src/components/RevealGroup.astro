@@ -1,0 +1,47 @@
+---
+// Wraps a card grid so its children animate in as they enter the viewport.
+// Progressive enhancement: children render normally in the HTML and stay
+// visible with no JS or with `prefers-reduced-motion` --- the "hidden until
+// revealed" class is only ever added by the script below, never by the
+// server, so there is no flash-of-invisible-content fallback to get wrong.
+---
+
+<fs-reveal-group>
+  <slot />
+</fs-reveal-group>
+
+<script>
+  class RevealGroup extends HTMLElement {
+    connectedCallback() {
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Card grids nest an extra wrapper (.at-card-grid) between this element
+      // and each card, so target the cards themselves rather than direct
+      // children --- that's what makes the stagger below visible per-item.
+      const children = Array.from(this.querySelectorAll(":scope .at-card"));
+      if (prefersReduced || !("IntersectionObserver" in window) || children.length === 0) return;
+
+      children.forEach((child, index) => {
+        child.classList.add("fs-reveal-ready");
+        (child as HTMLElement).style.animationDelay = `${Math.min(index, 8) * 60}ms`;
+      });
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.remove("fs-reveal-ready");
+            entry.target.classList.add("fs-reveal-in");
+            observer.unobserve(entry.target);
+          }
+        },
+        { rootMargin: "0px 0px -10% 0px", threshold: 0.1 },
+      );
+
+      children.forEach((child) => observer.observe(child));
+    }
+  }
+
+  if (!customElements.get("fs-reveal-group")) {
+    customElements.define("fs-reveal-group", RevealGroup);
+  }
+</script>
