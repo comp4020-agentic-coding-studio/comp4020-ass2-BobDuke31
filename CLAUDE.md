@@ -32,3 +32,53 @@ again:
 - When exploring a direction, start from something richer than feels
   comfortable and refine it down, rather than starting minimal and hoping to
   add richness back in later --- that's how last time ended up linear.
+
+## Assignment 2: Fail States (SLOP3722)
+
+The course is "Fail States" --- how games design losing: checkpoints,
+permadeath, lives, difficulty, and the meaning players make from failure.
+Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.md`
+(the approved plan); the decisions worth carrying forward as rules:
+
+- **Interactivity and polish are distributed, not concentrated.** First pass
+  put one interactive centerpiece on the homepage and left the rest of the
+  site static; that was corrected before any code was written. The fix wasn't
+  "add more features" but a small reusable system applied at the point of
+  relevant content: one design-token stylesheet (`src/styles/failstate.css`),
+  one reusable `<LiveDemo>` component used with three different `mode`s
+  (weeks 4/8/12), one reveal-on-scroll custom element reused on every card
+  grid, one ambient run-progress indicator, and the view-transition
+  choreography the theme already ships for free (`Card`/`ContentLayout`'s
+  matching `transition:name` convention --- check before building a
+  transition system from scratch, the theme may already have one). When
+  adding a new interactive idea, prefer extending one of these over inventing
+  a bespoke one-off widget, and prefer placing it where the content actually
+  calls for it over the homepage by default.
+- **Read the platform before building around it.** `astro-theme-university`'s
+  `BaseLayout` (the true common ancestor of every page) exposes a `hero` slot
+  that neither `ContentLayout` nor `MdxPageLayout` forwards to their own
+  consumers --- there is no way to inject something next to the nav bar
+  without editing the fixed theme. The fix was a project-owned
+  `CourseContentLayout.astro` wrapper (mirrors the starter's own
+  `PageLayout.astro`-wraps-`MdxPageLayout` pattern) that makes ambient chrome
+  the first element of each page's own content instead, styled
+  `position: sticky`. This kind of platform archaeology (read the actual
+  `node_modules` source, don't assume) found the free transition mechanism
+  above too.
+- **Raster images are off the table; the site is image-free by design.** The
+  `Write` tool can't author binary formats, and `check-evidence.ts` requires
+  the four starter images be changed or removed. Rather than fight that, the
+  site leans into CSS/SVG/motion for its visual identity (inline SVG hearts,
+  the run map, the marking-weight bar) and the people/social-image slots go
+  without photos --- an explicit design decision, not an oversight. Note:
+  `astro-theme-university`'s `OpenGraph` component always encodes local
+  `socialImage`s to JPEG via `getImage()`, which can't rasterize SVG under
+  this project's fixed `astro.config.ts` (no `dangerouslyProcessSVG`) --- so
+  a hand-drawn SVG can't stand in for a social card either. `socialImage` is
+  therefore left unset in `src/site-config.ts` rather than pointed at a
+  format the pipeline can't process.
+- **Build the accessible version first, the enhancement second.** The Run Map
+  is a real `<ol>` of links before it's a zig-zag node graph; `LiveDemo` and
+  `MarkingModel`'s weight bar keep an aria-live status region or a plain
+  table alongside the visual/interactive layer. This is what let `pnpm build`'s
+  axe checks and the keyboard/no-JS verification pass without a special case.

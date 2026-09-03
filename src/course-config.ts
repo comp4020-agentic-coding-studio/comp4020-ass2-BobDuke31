@@ -44,19 +44,20 @@ export const slopCourseMetaSchema = z
 // this API contract when the course is published.
 //
 // The code's last three digits were assigned to this repo when it was
-// provisioned, and no other course in the cohort has them. Change the first
-// digit to your course's level (and `level` to match); keep the other three.
-// STARTER_CONTENT: replace this course record, then remove this comment.
+// provisioned, and no other course in the cohort has them. Level 3: an
+// upper-undergraduate games-studies elective, not an intro course.
 export const courseMeta = slopCourseMetaSchema.parse({
-  code: "SLOP1722",
-  title: "Course Title Goes Here",
+  code: "SLOP3722",
+  title: "Fail States",
   session: "Semester 1",
   year: 2027,
-  level: 1,
+  level: 3,
   startDate: "2027-02-22",
   endDate: "2027-05-28",
   description:
-    "One concise paragraph explaining what this course is, who it is for, " +
-    "and why somebody would choose to spend a semester taking it.",
-  tags: ["replace me"],
+    "A semester spent studying how games design losing: checkpoints, " +
+    "permadeath, lives, difficulty curves, and the meaning players make " +
+    "from failure. For anyone who has ever wondered why dying in a game " +
+    "can feel worth doing again.",
+  tags: ["game design", "failure", "player experience"],
 }) satisfies CourseMetaInput;
