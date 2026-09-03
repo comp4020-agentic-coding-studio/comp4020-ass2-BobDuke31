@@ -1,46 +1,46 @@
 ---
-title: Assignment 1
+title: Fail-State Postmortem
 description:
-  The first piece of graded work — a placeholder brief showing the shape every
-  assessment page follows
-week: 6
-due: 2027-04-12T12:00:00+10:00
-weight: 40
+  Take one real game's failure design apart using the taxonomy from weeks 1
+  and 2, and say what it's actually forgiving
+week: 5
+due: 2027-03-22T12:00:00+10:00
+weight: 30
 marking:
   mode: weighted
   criteria:
-    - name: Response to the brief
-      weight: 60
-    - name: Quality of execution
+    - name: Correct use of the failure taxonomy
       weight: 40
+    - name: Depth and specificity of the analysis
+      weight: 40
+    - name: Clarity of the written argument
+      weight: 20
 spec:
-  - submitted by the deadline, in the format named below
-  - it does the thing the brief asks for, and a reader can tell that it does
-  - the work is yours, with any assistance declared
+  - submitted by the deadline, as a single document (2000 words or equivalent)
+  - names the game and identifies at least two tiers of the taxonomy it uses
+  - argues a specific claim about what the game's fail state is doing, not just what it is
 related:
-  - final-project
+  - checkpoint-design
 ---
-
-<!-- STARTER_CONTENT: replace this assessment brief, then remove this comment. -->
-
-Replace this brief. An assessment page has three jobs: pose the problem, say
-what is submitted, and say how it is marked.
 
 ## The brief
 
-> One sentence stating the problem, set as a blockquote so it reads as the thing
-> being asked rather than as commentary on it.
+> Pick one game and explain, precisely, what happens when a player fails at
+> it — and why the designer chose that, rather than the obvious alternative.
 
-Then a paragraph or two on what makes a strong response --- the room the brief
-leaves, and the judgement it is testing. Keep the provocation and the mechanics
-apart: a student should be able to read the first and know what to make, and
-read the second and know what to hand in.
+Vague failure-design writing tends to stop at description: "this game has
+checkpoints" is not an analysis, it's an observation. A strong postmortem uses
+the taxonomy from weeks 1 and 2 to say something more specific — which tier of
+loss the game inflicts, why that tier and not another, and what would change
+about the game if the designer had picked differently.
+
+Pick a game you know well enough to be specific about. An unfamiliar game
+analyzed shallowly is a worse submission than a familiar one analyzed
+precisely.
 
 ## What you submit
 
-Name the artefact and the format. If evidence of process is part of the
-submission, say which files and what each is for.
-
-The optional `marking:` block renders a criterion table (weighted) or a marking
-statement (holistic) below; leave it out and say how the work is marked in
-prose.
+A single written document, roughly 2000 words (a shorter piece that does the
+same work well is not penalised for length). Structure is your choice, but a
+reader should be able to identify your central claim, the evidence for it, and
+where the taxonomy is doing analytical work rather than decoration.

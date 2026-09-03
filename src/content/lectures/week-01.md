@@ -1,8 +1,8 @@
 ---
-title: Opening lecture
+title: Why Failure Feels Bad (and Why We Keep Playing)
 description:
-  The first lecture — what the course is, why it is shaped this way, and what
-  happens in week 1
+  The opening lecture — the paradox of failure, and why a whole course can be
+  built out of the worst moment in every game
 week: 1
 date: 2027-02-22
 teachers:
@@ -12,19 +12,18 @@ related:
   - sessions/01-getting-started
 ---
 
-<!-- STARTER_CONTENT: replace this lecture, then remove this comment. -->
-
-Replace this page. A lecture entry says what was covered and links to the pages
-that own the detail, so the lecture stays short and nothing is explained twice.
-
-The `related:` ref above is a graph edge: it renders on this page and on the
-session's, so declare a connection once, on whichever side is convenient.
-
-The page renders its `slides:` link automatically. Decks are markdown too,
-under `src/decks/`; the path is part of the lecture's API metadata.
+Jesper Juul's *The Art of Failure* opens with a question that sounds like a
+joke and isn't: why would anyone pay money to feel bad on purpose, repeatedly,
+for entertainment? Every other medium that makes you feel bad — a sad film, a
+tragic novel — does it *to* you. A game does it *because of* you. You did the
+thing that made you lose. That's the paradox this course spends twelve weeks
+taking seriously.
 
 ## Outline
 
-- what the course is for
-- how the weeks are shaped
-- what to do before the first session
+- the paradox of failure, and why it resists the obvious answers
+- what "Fail States" as a course actually studies: not bad games, but the
+  design of losing in good ones
+- how the semester is shaped — theory, then history, then a run of case
+  studies, ending on a capstone where you design a fail state yourself
+- what to bring to week 1's session

@@ -1,36 +1,40 @@
 ---
-title: Getting started
+title: Why Failure Feels Bad (and Why We Keep Playing)
 description:
-  The first session of the semester — what to have working before you arrive,
-  and what happens once you do
+  The opening run — Juul's paradox of failure, and the question the whole
+  semester keeps circling back to
 week: 1
 date: 2027-02-22
+tags:
+  - theory
 teachers:
-  - marisol-quaye
+  - idris-fenn
+related:
+  - lectures/week-01
 spec:
-  - your development environment runs the course's toolchain
-  - you can build and preview the site locally
-  - you have something, however rough, to show the class
+  - you can state the paradox of failure in one sentence, in your own words
+  - you have named a game you kept playing after it made you feel bad, and why
+  - you have the course toolchain running and can preview the site locally
 ---
 
-<!-- STARTER_CONTENT: replace this session, then remove this comment. -->
-
-Replace this page. A session brief tells a student three things: what to bring,
-what will happen, and how to tell afterwards whether it went well.
+Jesper Juul's observation is the one the rest of the semester keeps testing:
+failing at a game feels bad in the moment and is somehow still why people keep
+playing it. Nobody signs up to lose. Everybody signs up for a game that might
+make them.
 
 ## Before the session
 
-The `spec` above is the contract. Write each line so a reader can tell whether
-it has been met without asking you --- that is the difference between a spec and
-a wish.
+Read the paradox as stated in the lecture, then find one example from your own
+play history — a game that beat you and that you went back to anyway. Bring
+it, and bring a guess at why.
 
 ## In the session
 
-Say how the time is actually spent, in the order it happens. If the session runs
-to a repeating shape --- a demo, then feedback, then work time --- name the
-parts and say roughly how long each takes. Students plan against it.
+Short round of examples first, sorted live into a rough taxonomy on the board.
+Then a walkthrough of the semester's structure: how the weeks build from
+"what is failure" to "design one yourself" by week 12.
 
 ## Afterwards
 
-Say what leaves the session: a mark, a piece of feedback, a decision about the
-next week's work.
+The taxonomy from the board becomes the reading for week 2, where it gets a
+proper name.

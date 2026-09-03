@@ -1,0 +1,37 @@
+---
+title: Checkpoints and the Architecture of Mercy
+description:
+  Punishing versus generous save design — try both policies against the same
+  hazard before you take a side
+week: 4
+date: 2027-03-15
+teachers:
+  - marisol-quaye
+slides: /decks/week-04/
+related:
+  - sessions/04-checkpoints
+  - assessments/checkpoint-design
+---
+
+import LiveDemo from "../../components/LiveDemo.astro";
+
+A checkpoint is an argument about how much of a mistake a player should have
+to repeat. "Punishing" and "generous" aren't just adjectives here — they're
+two different answers to a design question: when this hazard kills you, what
+exactly does the game make you redo?
+
+## Try it
+
+<LiveDemo mode="checkpoint" />
+
+Run it under both policies a few times. The hazard doesn't move and the
+outcome is randomised the same way either time — the only variable is what
+happens to the twenty seconds of progress you had before you died.
+
+## Outline
+
+- what a checkpoint is actually forgiving: time, or context, or both
+- punishing saves as a design tool, not just an oversight
+- generous saves and the risk of removing consequence entirely
+- how this week's live demo isolates the variable from everything else in a
+  real game

@@ -1,21 +1,19 @@
 ---
 title: Marisol Quaye
 description:
-  The founding convenor, responsible for the course's shape and its weekly
-  teaching programme.
+  The founding convenor. Designed the run structure and picks the fights the
+  course has with games that get failure wrong.
 affiliation: Slop University School of Invented Disciplines
 role: convenor
 email: marisol.quaye@slop.university
-contact: Email for course-level questions; use the weekly session for feedback on work.
-photo: ./marisol-quaye.avif
-photoAlt: A stylised portrait of a person in three-quarter view, flat gold and black shapes on warm cream, in a two-ink risograph print
+contact: Email for course-level questions; bring feedback on work to the weekly run instead.
 ---
 
-<!-- STARTER_CONTENT: replace this person entry, then remove this comment. -->
+Marisol has been taking notes on the worst moment in every game she has ever
+lost since long before it was a research interest. *Fail States* grew out of a
+long-running argument with a colleague over whether Celeste's Assist Mode
+"counts" — a question this course now spends an entire week refusing to
+answer cleanly.
 
-Replace this entry. A people page carries a short bio and whatever a student
-needs in order to contact the right person for the right thing --- and nothing
-that will be stale by week 3.
-
-Consultation hours, contact preferences and the escalation path (who to ask
-first, who to ask when that does not work) are the parts students actually read.
+Office hours are informal: whoever is losing at something in the games lab on
+Wednesday afternoons is welcome to ask a question in between attempts.

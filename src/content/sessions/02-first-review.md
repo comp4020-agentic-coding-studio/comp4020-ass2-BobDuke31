@@ -1,36 +1,41 @@
 ---
-title: First review
+title: The Taxonomy of Losing
 description:
-  The second session, where work made in week 1 meets an audience for the first
-  time
+  Sorting failure into a real hierarchy — time, progress, resource, and death
+  — and testing it against games nobody in the room can agree on
 week: 2
 date: 2027-03-01
+tags:
+  - theory
 teachers:
   - idris-fenn
-spec:
-  - work from week 1 is running and can be shown in under two minutes
-  - you can name the one decision you are least sure about
 related:
-  - assessments/assignment-1
+  - lectures/week-02
+  - assessments/fail-state-postmortem
+spec:
+  - you can place a named failure event into the four-part hierarchy
+  - you can name a failure event that resists being placed cleanly
+  - you have picked the game you intend to analyze in the postmortem
 ---
 
-<!-- STARTER_CONTENT: replace this session, then remove this comment. -->
-
-Replace this page. It is here so the sessions listing sorts by week, the detail
-route renders a second spec, and the related block has an edge into the
-assessment collection.
+Not all losing is the same size. Losing a few seconds of progress is not
+losing a run, and losing a run is not losing a character permanently. The
+hierarchy from the lecture — time lost, progress lost, resources lost, death —
+gives the rest of the course a shared vocabulary for comparing games that
+otherwise look nothing alike.
 
 ## Before the session
 
-Bring the work from week 1 and the one decision you are least sure about.
+Bring three failure events from three different games, and a first guess at
+where each sits in the hierarchy.
 
 ## In the session
 
-Short demos, then feedback aimed at the decision rather than the polish. What
-makes a review worth attending is that the feedback changes what someone does
-next, so build in the time to act on it.
+We test the hierarchy against edge cases as a group — the ones that don't sit
+neatly in one tier are usually the more interesting design decisions, not
+failures of the taxonomy.
 
 ## Afterwards
 
-If attendance or participation is worth marks, say so here and link the rule to
-the [assessment page](/assessments/) rather than restating it.
+Pick the game for your [Fail-State Postmortem](/assessments/fail-state-postmortem/)
+before next week. The taxonomy is the tool you'll use to take it apart.

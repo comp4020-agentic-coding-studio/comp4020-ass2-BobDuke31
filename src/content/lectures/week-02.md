@@ -1,23 +1,26 @@
 ---
-title: Second lecture
+title: The Taxonomy of Losing
 description:
-  Week 2 — the first substantive material, and the run-up to the first review
+  A four-part hierarchy for failure — time, progress, resources, death — and
+  the games that don't fit it cleanly
 week: 2
 date: 2027-03-01
 teachers:
-  - idris-fenn
+  - marisol-quaye
 related:
   - sessions/02-first-review
-  - assessments/assignment-1
+  - assessments/fail-state-postmortem
 ---
 
-<!-- STARTER_CONTENT: replace this lecture, then remove this comment. -->
-
-Replace this page. It exists so the lectures listing sorts by week and the
-related block has more than one edge to draw.
+Before you can compare how two games handle failure, you need a vocabulary
+that isn't just "harsh" or "fair." This lecture proposes four tiers, ordered
+by what actually gets taken away from the player: a few seconds, a chunk of
+progress, a stock of resources, or the character itself.
 
 ## Outline
 
-- the first substantive material, and where it shows up in practice
-- what the first review is looking for
-- reading before next week
+- time loss: the mildest tier, and why it's still not free
+- progress loss: what a checkpoint is actually protecting
+- resource loss: lives, ammo, currency — failure with an economy attached
+- death: the tier that ends a session rather than a moment
+- the games that sit across two tiers at once, and why that's usually deliberate
