@@ -27,7 +27,7 @@ const palette = ["--at-primary", "--at-secondary", "--at-tertiary"];
     marking.mode === "holistic" ? (
       <p>{marking.description}</p>
     ) : (
-      <>
+      <div class="fs-panel fs-marking-panel">
         <fs-weight-bar class="fs-weight-bar" aria-hidden="true">
           {marking.criteria.map((criterion, i) => (
             <button
@@ -44,36 +44,68 @@ const palette = ["--at-primary", "--at-secondary", "--at-tertiary"];
         <p class="fs-weight-callout" data-role="callout" aria-live="polite">
           Hover or tab through the bar to see each criterion.
         </p>
-        <table>
-          <caption class="sr-only">Marking criteria and their weight</caption>
-          <thead>
-            <tr>
-              <th scope="col">Criterion</th>
-              <th scope="col">Weight</th>
-            </tr>
-          </thead>
-          <tbody>
-            {marking.criteria.map((criterion) => (
+        <fs-mark-calc class="fs-mark-calc">
+          <table>
+            <caption class="sr-only">
+              Marking criteria, their weight, and a calculator for your own projected mark
+            </caption>
+            <thead>
               <tr>
-                <td>{criterion.name}</td>
-                <td>{criterion.weight}%</td>
+                <th scope="col">Criterion</th>
+                <th scope="col">Weight</th>
+                <th scope="col">Your mark</th>
+                <th scope="col">Contributes</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </>
+            </thead>
+            <tbody>
+              {marking.criteria.map((criterion, i) => (
+                <tr>
+                  <td>{criterion.name}</td>
+                  <td>{criterion.weight}%</td>
+                  <td>
+                    <input
+                      type="number"
+                      class="fs-mark-input"
+                      min="0"
+                      max="100"
+                      inputmode="numeric"
+                      placeholder="0–100"
+                      data-weight={criterion.weight}
+                      aria-label={`Your mark out of 100 for ${criterion.name}`}
+                      id={`fs-mark-input-${i}`}
+                    />
+                  </td>
+                  <td class="fs-mark-contribution" data-role="contribution">—</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Projected total</td>
+                <td class="fs-mark-total" data-role="total" aria-live="polite">
+                  Enter marks above to see a projected total.
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </fs-mark-calc>
+      </div>
     )
   }
 </section>
 
 <style>
+  .fs-marking-panel {
+    margin-block: 1rem;
+  }
+
   .fs-weight-bar {
     display: flex;
     width: 100%;
     height: 3rem;
     border-radius: 0.5rem;
     overflow: hidden;
-    margin-block: 1rem 0.5rem;
+    margin-block: 0 0.5rem;
   }
 
   .fs-weight-segment {
@@ -106,6 +138,36 @@ const palette = ["--at-primary", "--at-secondary", "--at-tertiary"];
     color: var(--at-text-secondary);
   }
 
+  .fs-mark-input {
+    width: 4.5rem;
+    padding: 0.25rem 0.4rem;
+    border: 1px solid var(--fs-map-line, color-mix(in srgb, var(--at-tertiary) 40%, transparent));
+    border-radius: 0.35rem;
+    background: var(--at-bg);
+    color: inherit;
+    font: inherit;
+  }
+
+  .fs-mark-input:focus-visible {
+    border-color: var(--at-primary);
+  }
+
+  .fs-mark-contribution {
+    font-variant-numeric: tabular-nums;
+    color: var(--at-text-secondary);
+  }
+
+  .fs-mark-contribution.fs-mark-contribution--filled {
+    color: var(--at-text);
+    font-weight: 600;
+  }
+
+  tfoot .fs-mark-total {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--at-primary);
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;
@@ -134,5 +196,53 @@ const palette = ["--at-primary", "--at-secondary", "--at-tertiary"];
 
   if (!customElements.get("fs-weight-bar")) {
     customElements.define("fs-weight-bar", WeightBar);
+  }
+
+  // A projected mark is only ever a client-side "what if": nothing here is
+  // submitted or stored, it just turns the static weight table into
+  // something a student can play with before an assessment is even due.
+  class MarkCalc extends HTMLElement {
+    connectedCallback() {
+      const inputs = this.querySelectorAll<HTMLInputElement>(".fs-mark-input");
+      const total = this.querySelector<HTMLElement>('[data-role="total"]');
+      if (!total) return;
+
+      const recompute = () => {
+        let sum = 0;
+        let anyFilled = false;
+        inputs.forEach((input) => {
+          const weight = Number(input.dataset.weight ?? 0);
+          const contribution = input.closest("tr")?.querySelector<HTMLElement>(
+            '[data-role="contribution"]',
+          );
+          const raw = input.value.trim();
+          if (raw === "") {
+            if (contribution) {
+              contribution.textContent = "—";
+              contribution.classList.remove("fs-mark-contribution--filled");
+            }
+            return;
+          }
+          const mark = Math.min(100, Math.max(0, Number(raw)));
+          const contributed = (mark / 100) * weight;
+          sum += contributed;
+          anyFilled = true;
+          if (contribution) {
+            contribution.textContent = `${contributed.toFixed(1)}%`;
+            contribution.classList.add("fs-mark-contribution--filled");
+          }
+        });
+
+        total.textContent = anyFilled
+          ? `Projected total: ${sum.toFixed(1)}%`
+          : "Enter marks above to see a projected total.";
+      };
+
+      inputs.forEach((input) => input.addEventListener("input", recompute));
+    }
+  }
+
+  if (!customElements.get("fs-mark-calc")) {
+    customElements.define("fs-mark-calc", MarkCalc);
   }
 </script>

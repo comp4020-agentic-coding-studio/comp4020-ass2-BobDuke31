@@ -20,6 +20,8 @@ const visible = assessments.sort((a, b) => a.data.week - b.data.week);
               <small>
                 Due {formatCourseDate(assessment.data.due)} · Weight: {assessment.data.weight}%{assessment.data.draft && " · Draft"}
               </small>
+              {" "}
+              <fs-due data-due={assessment.data.due.toISOString()} />
             </p>
           )}
         </Card>
@@ -27,3 +29,54 @@ const visible = assessments.sort((a, b) => a.data.week - b.data.week);
     }
   </CardGrid>
 </RevealGroup>
+
+<style>
+  fs-due {
+    display: inline-flex;
+  }
+
+  fs-due .fs-badge {
+    font-size: 0.7rem;
+  }
+</style>
+
+<script>
+  // The formatted due date already ships in the markup --- this only adds a
+  // relative "in N days" chip once the viewer's actual clock is known, so a
+  // no-JS reader loses nothing but a shortcut.
+  class DueChip extends HTMLElement {
+    connectedCallback() {
+      const due = this.dataset.due ? new Date(this.dataset.due) : undefined;
+      if (!due || Number.isNaN(due.getTime())) return;
+
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      const dueDay = new Date(due);
+      dueDay.setUTCHours(0, 0, 0, 0);
+      const days = Math.round((dueDay.getTime() - today.getTime()) / 86_400_000);
+
+      let text: string;
+      let variant: "danger" | "neutral" = "neutral";
+      if (days < 0) {
+        text = `Overdue by ${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"}`;
+        variant = "danger";
+      } else if (days === 0) {
+        text = "Due today";
+        variant = "danger";
+      } else if (days === 1) {
+        text = "Due tomorrow";
+      } else {
+        text = `Due in ${days} days`;
+      }
+
+      const chip = document.createElement("span");
+      chip.className = `fs-badge fs-badge--${variant}`;
+      chip.textContent = text;
+      this.appendChild(chip);
+    }
+  }
+
+  if (!customElements.get("fs-due")) {
+    customElements.define("fs-due", DueChip);
+  }
+</script>

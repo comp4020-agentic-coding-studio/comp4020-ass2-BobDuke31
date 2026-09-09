@@ -4,10 +4,26 @@
 // rather than as a one-off homepage widget. Self-contained: it works out
 // whether the current page is a run from the URL, so no page needs to call
 // it explicitly.
+//
+// `transition:persist` keeps this one element across Astro's view
+// transitions instead of unmounting and remounting it per navigation, so the
+// fill only ever animates toward a new value — it never resets to 0% and
+// re-fills on every click through the run map.
+import { TOTAL_RUNS } from "../scripts/run-state";
+
+const milestoneMessages: Record<number, string> = {
+  0.25: "A quarter of the run cleared.",
+  0.5: "Halfway through the run.",
+  0.75: "Three-quarters cleared — the finish is close.",
+  1: "Every run cleared. Full clear.",
+};
 ---
 
-<fs-run-progress>
+<fs-run-progress transition:name="run-progress" transition:persist data-milestones={JSON.stringify(milestoneMessages)}>
   <div class="fs-run-progress-track" aria-hidden="true">
+    {Array.from({ length: TOTAL_RUNS - 1 }, (_, i) => (
+      <span class="fs-run-progress-tick" style={`inset-inline-start:${((i + 1) / TOTAL_RUNS) * 100}%`} />
+    ))}
     <div class="fs-run-progress-fill"></div>
   </div>
   <p class="fs-run-progress-label" aria-live="polite"></p>
@@ -23,11 +39,23 @@
   }
 
   .fs-run-progress-track {
-    height: 3px;
+    position: relative;
+    height: 5px;
     background: var(--fs-spent);
   }
 
+  .fs-run-progress-tick {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--at-bg, canvas);
+    z-index: 1;
+  }
+
   .fs-run-progress-fill {
+    position: relative;
+    z-index: 0;
     height: 100%;
     width: 0%;
     background: var(--fs-success);
@@ -40,6 +68,11 @@
     font-size: 0.75rem;
     color: var(--at-text-secondary);
     text-align: end;
+  }
+
+  .fs-run-progress-label.fs-run-progress-label--milestone {
+    color: var(--fs-success);
+    font-weight: 600;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -55,6 +88,7 @@
   class RunProgress extends HTMLElement {
     #fill: HTMLElement | null = null;
     #label: HTMLElement | null = null;
+    #milestoneTimer: number | undefined;
 
     connectedCallback() {
       this.#fill = this.querySelector(".fs-run-progress-fill");
@@ -62,21 +96,36 @@
       this.render();
       markCurrentPageVisited();
 
-      window.addEventListener(RUN_STATE_EVENT, () => this.render());
+      window.addEventListener(RUN_STATE_EVENT, (event) => {
+        const milestone = (event as CustomEvent).detail?.milestone;
+        this.render(milestone);
+      });
       document.addEventListener("astro:page-load", () => {
         markCurrentPageVisited();
         this.render();
       });
     }
 
-    render() {
+    render(milestone?: number) {
       const count = getVisitedRuns().size;
       if (this.#fill) this.#fill.style.width = `${(count / TOTAL_RUNS) * 100}%`;
-      if (this.#label) {
-        this.#label.textContent =
-          count === 0
-            ? "No runs explored yet"
-            : `${count} of ${TOTAL_RUNS} runs explored`;
+      if (!this.#label) return;
+
+      const defaultText =
+        count === 0 ? "No runs explored yet" : `${count} of ${TOTAL_RUNS} runs explored`;
+
+      const messages = JSON.parse(this.dataset.milestones ?? "{}") as Record<string, string>;
+      if (milestone !== undefined && messages[milestone]) {
+        window.clearTimeout(this.#milestoneTimer);
+        this.#label.textContent = messages[milestone];
+        this.#label.classList.add("fs-run-progress-label--milestone", "fs-pop");
+        this.#milestoneTimer = window.setTimeout(() => {
+          if (!this.#label) return;
+          this.#label.textContent = defaultText;
+          this.#label.classList.remove("fs-run-progress-label--milestone");
+        }, 3200);
+      } else {
+        this.#label.textContent = defaultText;
       }
     }
   }

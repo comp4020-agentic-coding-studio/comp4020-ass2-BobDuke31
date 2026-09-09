@@ -1,8 +1,11 @@
 ---
-// A small thematic hero decoration: a strip of "lives," some spent. Purely
-// declarative --- unlike LiveDemo, nothing here is interactive --- but it
-// sets the visual register (arcade HUD, not lecture-theatre photography)
-// before a single word of the homepage copy loads.
+// A thematic hero decoration: a strip of "lives," some spent. Sets the
+// visual register (arcade HUD, not lecture-theatre photography) before a
+// single word of the homepage copy loads --- but a spent life is also the
+// one piece of the site's own vocabulary a visitor has never been told the
+// meaning of, so each heart is a real button that explains itself on
+// hover/focus/click, the same trigger-then-status pattern LiveDemo and
+// MarkingModel use elsewhere.
 export interface Props {
   lives: number;
   spent: number;
@@ -10,31 +13,68 @@ export interface Props {
 
 const { lives, spent } = Astro.props;
 const items = Array.from({ length: lives }, (_, i) => i < lives - spent);
+
+const spentCopy =
+  "Spent, arcade-style: like a continue that cost a coin. Week 3 traces where that " +
+  "convention came from and what it's still doing in games that don't take coins.";
+const aliveCopy = "Still in the run.";
 ---
 
-<p class="fs-lives" aria-label={`${lives - spent} of ${lives} lives remaining`}>
-  {
-    items.map((alive) => (
-      <svg
-        class:list={["fs-life", { "fs-life--spent": !alive, "fs-pulse": alive }]}
-        viewBox="0 0 24 22"
-        width="28"
-        height="26"
-        aria-hidden="true"
-      >
-        <path d="M12 20 C4 14 1 9.5 1 6.2 1 3 3.3 1 6 1c1.9 0 3.7 1.1 4.6 2.8C11.5 2.1 13.3 1 15.2 1 17.9 1 20 3 20 6.2 20 9.5 17 14 9 20 Z" />
-      </svg>
-    ))
-  }
-  <span class="fs-lives-label">{lives - spent} of {lives} lives left this run</span>
-</p>
+<fs-lives class="fs-lives">
+  <p class="fs-lives-strip" aria-label={`${lives - spent} of ${lives} lives remaining`}>
+    {
+      items.map((alive, i) => (
+        <button
+          type="button"
+          class="fs-life-button"
+          data-alive={alive ? "true" : "false"}
+          aria-label={`Life ${i + 1}: ${alive ? "in play" : "spent"}`}
+        >
+          <svg
+            class:list={["fs-life", { "fs-life--spent": !alive, "fs-pulse": alive }]}
+            viewBox="0 0 24 22"
+            width="28"
+            height="26"
+            aria-hidden="true"
+          >
+            <path d="M12 20 C4 14 1 9.5 1 6.2 1 3 3.3 1 6 1c1.9 0 3.7 1.1 4.6 2.8C11.5 2.1 13.3 1 15.2 1 17.9 1 20 3 20 6.2 20 9.5 17 14 9 20 Z" />
+          </svg>
+        </button>
+      ))
+    }
+    <span class="fs-lives-label">{lives - spent} of {lives} lives left this run</span>
+  </p>
+  <p class="fs-lives-status" data-role="status" aria-live="polite" data-alive-copy={aliveCopy} data-spent-copy={spentCopy}>
+    Hover or tab through the lives above.
+  </p>
+</fs-lives>
 
 <style>
   .fs-lives {
+    display: block;
+    margin-block: 0 1.5rem;
+  }
+
+  .fs-lives-strip {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    margin-block: 0 1.5rem;
+    gap: 0.15rem;
+    margin: 0;
+  }
+
+  .fs-life-button {
+    display: inline-flex;
+    padding: 0.2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: var(--at-border-radius);
+    transition: transform var(--fs-fast) var(--fs-ease);
+  }
+
+  .fs-life-button:hover,
+  .fs-life-button:focus-visible {
+    transform: scale(1.15);
   }
 
   .fs-life {
@@ -54,4 +94,37 @@ const items = Array.from({ length: lives }, (_, i) => i < lives - spent);
     color: var(--at-text-secondary);
     font-size: 0.95rem;
   }
+
+  .fs-lives-status {
+    min-height: 1.4em;
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+    font-style: italic;
+  }
 </style>
+
+<script>
+  class LivesStripEl extends HTMLElement {
+    connectedCallback() {
+      const status = this.querySelector<HTMLElement>('[data-role="status"]');
+      const buttons = this.querySelectorAll<HTMLButtonElement>(".fs-life-button");
+      if (!status) return;
+
+      const say = (button: HTMLButtonElement) => {
+        const alive = button.dataset.alive === "true";
+        status.textContent = alive ? status.dataset.aliveCopy ?? "" : status.dataset.spentCopy ?? "";
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener("mouseenter", () => say(button));
+        button.addEventListener("focus", () => say(button));
+        button.addEventListener("click", () => say(button));
+      });
+    }
+  }
+
+  if (!customElements.get("fs-lives")) {
+    customElements.define("fs-lives", LivesStripEl);
+  }
+</script>

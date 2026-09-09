@@ -15,9 +15,31 @@ const people = teachers ? await getEntries(teachers) : [];
   people.length > 0 && (
     <section aria-labelledby="teaching-team">
       <h2 id="teaching-team">Teaching team</h2>
-      <ul>
-        {people.map((person) => <li><a href={withBase(`/people/${person.id}/`)}>{person.data.title}</a> — {person.data.role}</li>)}
+      <ul class="fs-teaching-team">
+        {people.map((person) => (
+          <li>
+            <a href={withBase(`/people/${person.id}/`)}>{person.data.title}</a>
+            <span class="fs-badge fs-badge--neutral">{person.data.role}</span>
+          </li>
+        ))}
       </ul>
     </section>
   )
 }
+
+<style>
+  .fs-teaching-team {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fs-teaching-team li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+</style>

@@ -17,6 +17,20 @@
   --fs-danger: #a3402c;
   --fs-success: var(--at-primary);
   --fs-spent: color-mix(in srgb, var(--at-tertiary) 60%, transparent);
+
+  /* Shared HUD-panel geometry: a notch cut from two corners, like a screen
+     with its safe-area masked off. One clip-path so every panel (LiveDemo,
+     the marking calculator, the run-map preview) reads as the same object
+     rather than each inventing its own container. */
+  --fs-notch: 0.9rem;
+  --fs-panel-clip: polygon(
+    var(--fs-notch) 0,
+    100% 0,
+    100% calc(100% - var(--fs-notch)),
+    calc(100% - var(--fs-notch)) 100%,
+    0 100%,
+    0 var(--fs-notch)
+  );
 }
 
 @keyframes fs-shake {
@@ -48,6 +62,18 @@
   }
 }
 
+/* A failure and a success shouldn't glow the same colour --- fs-flash is the
+   good-outcome ring, this is the one every "you died/missed" moment reaches
+   for instead (LiveDemo's checkpoint hazard, its timing-window miss). */
+@keyframes fs-flash-danger {
+  from {
+    box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--fs-danger) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
 @keyframes fs-pulse {
   0%,
   100% {
@@ -69,12 +95,89 @@
   }
 }
 
+@keyframes fs-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.16);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.fs-pop {
+  animation: fs-pop var(--fs-medium) var(--fs-ease);
+}
+
+/* Shared HUD-panel: the notched-corner container used by LiveDemo, the
+   marking calculator and the homepage run preview, so the site reads as one
+   piece of hardware rather than three components that each drew their own
+   box. */
+.fs-panel {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--at-tertiary) 40%, transparent);
+  clip-path: var(--fs-panel-clip);
+  background: var(--at-bg-alt);
+}
+
+.fs-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: var(--fs-panel-clip);
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--at-primary) 55%, transparent),
+    transparent 40%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Shared pill badge: consolidates the run-node type tag, the weight-segment
+   label and the course tag list, which each restyled the same shape. */
+.fs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  color: var(--at-primary);
+  background: color-mix(in srgb, var(--at-primary) 15%, transparent);
+}
+
+.fs-badge--neutral {
+  color: var(--at-text-secondary);
+  background: var(--at-bg-alt);
+}
+
+.fs-badge--danger {
+  color: var(--fs-danger);
+  background: color-mix(in srgb, var(--fs-danger) 18%, transparent);
+}
+
 .fs-shake {
   animation: fs-shake var(--fs-medium) var(--fs-ease);
 }
 
 .fs-flash {
   animation: fs-flash var(--fs-slow) var(--fs-ease);
+}
+
+.fs-flash--danger {
+  animation: fs-flash-danger var(--fs-slow) var(--fs-ease);
 }
 
 .fs-pulse {
@@ -101,7 +204,9 @@
 @media (prefers-reduced-motion: reduce) {
   .fs-shake,
   .fs-flash,
+  .fs-flash--danger,
   .fs-pulse,
+  .fs-pop,
   .fs-reveal-in {
     animation: none !important;
   }

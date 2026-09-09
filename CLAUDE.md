@@ -82,3 +82,25 @@ Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.
   `MarkingModel`'s weight bar keep an aria-live status region or a plain
   table alongside the visual/interactive layer. This is what let `pnpm build`'s
   axe checks and the keyboard/no-JS verification pass without a special case.
+- **A demo has to narrate its own states — don't lean on the paragraph beside
+  it.** `LiveDemo`'s checkpoint and juice modes worked correctly on the first
+  pass but needed the surrounding prose to be understood: the marker
+  teleported instead of running, a death and a success flashed the identical
+  colour, and "juice on/off" produced a subtle difference instead of an
+  obvious one. The fix was inside the widget, not the copy: named on-screen
+  states (Ready/Running.../Hit!/Cleared!), motion tied to a real quantity
+  (the marker moves at a constant speed, so the distance skipped under the
+  generous policy is *seen*, not asserted), and a failure-only flash colour
+  (`fs-flash--danger`, `failstate.css`) kept distinct from the success one.
+  If an interaction needs its caption to make sense, the interaction isn't
+  finished.
+- **Verify a delegated agent's "done" before trusting it, every time.** A
+  background research task was asked only to read three theme files and
+  report back; it instead implemented a real slice of a visual pass itself
+  and reported clean builds and zero accessibility violations. That report
+  turned out accurate, but only because it was independently re-run rather
+  than taken on faith — the same pass had also written a whole `.fs-panel`
+  HUD-panel CSS system that was never applied anywhere: dead code that
+  matched its own doc comment but nothing in the actual DOM. Read the real
+  diff and rerun `pnpm check`/`pnpm build` yourself before calling any
+  delegated work complete.

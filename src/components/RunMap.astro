@@ -5,9 +5,21 @@
 // a screen reader hears); the zig-zag node layout and "cleared" highlighting
 // are a CSS/JS enhancement on top of it, per CLAUDE.md's rule that nothing
 // here may regress to decoration-only.
+//
+// `compact` renders the same list of runs as a small strip of numbered
+// tokens rather than the full zig-zag route --- reused on the homepage so
+// its "route preview" is this component, not a bespoke one, per CLAUDE.md's
+// rule to extend a shared system rather than invent a one-off widget.
 import { getPublishedCollection } from "astro-course-university/content";
+import Icon from "astro-theme-university/components/Icon.astro";
 import { withBase } from "astro-theme-university/url";
 import { sessionLabels } from "../site-config";
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
 
 const sessions = await getPublishedCollection("sessions");
 const visible = sessions.sort((a, b) => a.data.week - b.data.week);
@@ -18,38 +30,66 @@ const typeLabels: Record<string, string> = {
   capstone: "Capstone",
 };
 
+// One small glyph per session type so the distinction survives colour
+// blindness and greyscale printing, not just the badge's hue.
+const typeIcons: Record<string, string> = {
+  theory: "M4 3h8M4 6.5h8M4 10h5", // stacked lines: reading
+  "case-study": "M7 3a4 4 0 100 8 4 4 0 000-8zm2.8 6.8L13 13", // magnifier: inspection
+  capstone: "M3 13V3l1.5 1L6 3l1.5 1L9 3v6H3zM3 13h3", // flag: the finish
+};
+
 function transitionNameFor(href: string) {
   return `card-title-${href.replace(/^\/|\/$/g, "").replace(/\//g, "-")}`;
 }
 ---
 
-<fs-run-map>
-  <ol class="fs-run-map">
+<fs-run-map data-compact={compact ? "true" : "false"}>
+  <ol class:list={["fs-run-map", { "fs-run-map--compact": compact }]}>
     {
       visible.map((session) => {
         const href = withBase(`/sessions/${session.id}/`);
         const type = session.data.tags.find((tag) => tag in typeLabels);
         return (
           <li class="fs-run-node" data-run-slug={session.id}>
-            <a href={href} class="fs-run-node-link">
+            <a href={href} class="fs-run-node-link" title={compact ? session.data.title : undefined}>
               <span class="fs-run-node-week">Week {session.data.week}</span>
-              <h2 class="fs-run-node-title" transition:name={transitionNameFor(href)}>
-                {session.data.title}
-              </h2>
-              {type && <span class="fs-run-node-type" data-type={type}>{typeLabels[type]}</span>}
-              {session.data.description && <p>{session.data.description}</p>}
-              <span class="fs-run-node-status" aria-hidden="true">Cleared</span>
+              {compact ? (
+                <span class="fs-run-node-dot" aria-hidden="true">{session.data.week}</span>
+              ) : (
+                <h2 class="fs-run-node-title" transition:name={transitionNameFor(href)}>
+                  {session.data.title}
+                </h2>
+              )}
+              {!compact && type && (
+                <span class="fs-badge fs-run-node-type" data-type={type}>
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                    <path d={typeIcons[type]} stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  {typeLabels[type]}
+                </span>
+              )}
+              {!compact && session.data.description && <p>{session.data.description}</p>}
+              <span class="fs-run-node-status" aria-hidden="true">
+                <Icon name="check-circle" size="0.9em" /> Cleared
+              </span>
+              <span class="fs-run-node-continue" aria-hidden="true">
+                <Icon name="arrow-up-circle" size="0.9em" /> Continue here
+              </span>
             </a>
           </li>
         );
       })
     }
   </ol>
-  <p class="fs-run-map-hint">
-    Every week of {sessionLabels.plural.toLowerCase()} the way a run through the
-    course looks from the outside. Nodes you have opened stay marked as
-    cleared.
-  </p>
+  {
+    !compact && (
+      <p class="fs-run-map-hint">
+        Every week of {sessionLabels.plural.toLowerCase()} the way a run through the
+        course looks from the outside. Nodes you have opened stay marked as
+        cleared, and the next one lights up as "Continue here".
+      </p>
+    )
+  }
 </fs-run-map>
 
 <style>
@@ -119,42 +159,127 @@ function transitionNameFor(href: string) {
   }
 
   .fs-run-node-type {
-    display: inline-block;
     margin-bottom: 0.4rem;
-    padding: 0.1rem 0.5rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    background: color-mix(in srgb, var(--at-primary) 15%, transparent);
-    color: var(--at-primary);
   }
 
   .fs-run-node-type[data-type="capstone"] {
-    background: color-mix(in srgb, var(--fs-danger) 18%, transparent);
     color: var(--fs-danger);
+    background: color-mix(in srgb, var(--fs-danger) 18%, transparent);
   }
 
-  .fs-run-node-status {
+  .fs-run-node-status,
+  .fs-run-node-continue {
     position: absolute;
     top: 0.75rem;
     inset-inline-end: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--fs-success);
     opacity: 0;
+  }
+
+  .fs-run-node-status {
+    color: var(--fs-success);
+  }
+
+  .fs-run-node-continue {
+    color: var(--at-primary);
   }
 
   .fs-run-node.fs-run-node--visited .fs-run-node-status {
     opacity: 1;
   }
 
+  .fs-run-node.fs-run-node--continue .fs-run-node-continue {
+    opacity: 1;
+    animation: fs-pulse 1.6s ease-in-out infinite;
+  }
+
   .fs-run-node.fs-run-node--visited .fs-run-node-link {
     border-color: var(--fs-success);
+  }
+
+  .fs-run-node.fs-run-node--continue .fs-run-node-link {
+    border-color: var(--at-primary);
+    box-shadow: 0 0 0 1px var(--at-primary);
   }
 
   .fs-run-map-hint {
     color: var(--at-text-secondary);
     font-size: 0.9rem;
+  }
+
+  /* Compact strip: the same ordered list of runs collapses into a row of
+     numbered tokens, reused on the homepage as the "route preview" instead
+     of a bespoke widget. */
+  .fs-run-map--compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block: 1rem;
+  }
+
+  .fs-run-map--compact::before {
+    display: none;
+  }
+
+  .fs-run-map--compact .fs-run-node {
+    justify-self: unset !important;
+    padding: 0 !important;
+  }
+
+  .fs-run-map--compact .fs-run-node-link {
+    display: flex;
+    padding: 0;
+    border: none;
+    background: none;
+    border-radius: 50%;
+  }
+
+  .fs-run-map--compact .fs-run-node-week {
+    display: none;
+  }
+
+  .fs-run-map--compact .fs-run-node-status,
+  .fs-run-map--compact .fs-run-node-continue {
+    position: static;
+    display: none;
+  }
+
+  .fs-run-node-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 2px solid var(--fs-map-line);
+    background: var(--at-bg-alt);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--at-text-secondary);
+    transition: transform var(--fs-fast) var(--fs-ease), border-color var(--fs-fast) var(--fs-ease);
+  }
+
+  .fs-run-map--compact .fs-run-node-link:hover .fs-run-node-dot,
+  .fs-run-map--compact .fs-run-node-link:focus-visible .fs-run-node-dot {
+    transform: scale(1.1);
+    border-color: var(--at-primary);
+  }
+
+  .fs-run-map--compact .fs-run-node--visited .fs-run-node-dot {
+    border-color: var(--fs-success);
+    color: var(--fs-success);
+    background: color-mix(in srgb, var(--fs-success) 12%, var(--at-bg-alt));
+  }
+
+  .fs-run-map--compact .fs-run-node--continue .fs-run-node-dot {
+    border-color: var(--at-primary);
+    color: var(--at-primary);
+    animation: fs-pulse 1.6s ease-in-out infinite;
   }
 </style>
 
@@ -169,9 +294,18 @@ function transitionNameFor(href: string) {
 
     paint() {
       const visited = getVisitedRuns();
-      this.querySelectorAll<HTMLElement>(".fs-run-node").forEach((node) => {
+      const nodes = this.querySelectorAll<HTMLElement>(".fs-run-node");
+      let continueSet = false;
+      nodes.forEach((node) => {
         const slug = node.dataset.runSlug;
-        node.classList.toggle("fs-run-node--visited", !!slug && visited.has(slug));
+        const isVisited = !!slug && visited.has(slug);
+        node.classList.toggle("fs-run-node--visited", isVisited);
+        // The first not-yet-opened node, in run order, is the one worth
+        // returning to --- but only once at least one run has been started,
+        // so a fresh visitor doesn't see "continue" before they've begun.
+        const isContinue = !isVisited && visited.size > 0 && !continueSet;
+        node.classList.toggle("fs-run-node--continue", isContinue);
+        if (isContinue) continueSet = true;
       });
     }
   }

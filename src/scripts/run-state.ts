@@ -26,13 +26,25 @@ export function getVisitedRuns(): Set<string> {
   }
 }
 
+// Fractions of the run map worth calling out when a visitor crosses them,
+// checked against the count before vs. after a visit so each fires once.
+const MILESTONES = [0.25, 0.5, 0.75, 1];
+
+export function milestoneCrossed(before: number, after: number): number | undefined {
+  return MILESTONES.find(
+    (fraction) => before / TOTAL_RUNS < fraction && after / TOTAL_RUNS >= fraction,
+  );
+}
+
 export function markCurrentPageVisited(): void {
   const match = window.location.pathname.match(/\/sessions\/([^/]+)\/?$/);
   if (!match) return;
   const slug = match[1];
   const visited = getVisitedRuns();
   if (visited.has(slug)) return;
+  const before = visited.size;
   visited.add(slug);
   safeStorage()?.setItem(STORAGE_KEY, JSON.stringify([...visited]));
-  window.dispatchEvent(new CustomEvent(RUN_STATE_EVENT, { detail: { visited } }));
+  const milestone = milestoneCrossed(before, visited.size);
+  window.dispatchEvent(new CustomEvent(RUN_STATE_EVENT, { detail: { visited, milestone } }));
 }
