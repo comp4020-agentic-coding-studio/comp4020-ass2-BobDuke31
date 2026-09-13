@@ -53,7 +53,12 @@ Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.
   transition system from scratch, the theme may already have one). When
   adding a new interactive idea, prefer extending one of these over inventing
   a bespoke one-off widget, and prefer placing it where the content actually
-  calls for it over the homepage by default.
+  calls for it over the homepage by default. A later pass added one more
+  piece to the same system rather than a one-off: `CollectionPager.astro`, a
+  single two-`variant` component (`"back"` / `"pager"`) reused across all
+  four detail-page types (sessions, lectures, assessments, people) for the
+  back-link and week-ordered prev/next, styled with the theme's own unused
+  `.at-button` system rather than plain `<button>`/`<a>` elements.
 - **Read the platform before building around it.** `astro-theme-university`'s
   `BaseLayout` (the true common ancestor of every page) exposes a `hero` slot
   that neither `ContentLayout` nor `MdxPageLayout` forwards to their own
@@ -94,6 +99,18 @@ Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.
   (`fs-flash--danger`, `failstate.css`) kept distinct from the success one.
   If an interaction needs its caption to make sense, the interaction isn't
   finished.
+- **When a demo's point is "compare two conditions," show both at once, not
+  one at a time.** `LiveDemo`'s checkpoint and juice modes originally made
+  the reader pick a policy/toggle, click, remember the result, then switch
+  and click again to compare --- which asked them to hold the other
+  condition in their head instead of seeing it. The fix was two tracks
+  (Punishing/Generous) or two blocks (no-juice/juice) running side by side,
+  sharing one button and one random roll or event, so both outcomes land in
+  the same click and the comparison is on screen, not in memory. Prefer this
+  whenever a future interaction's whole point is "X vs Y": a single
+  simultaneous view beats a toggle/radio picker across separate attempts,
+  even though the toggle is the easier build --- consistent with never
+  taking the easier version by default.
 - **Verify a delegated agent's "done" before trusting it, every time.** A
   background research task was asked only to read three theme files and
   report back; it instead implemented a real slice of a visual pass itself

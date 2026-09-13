@@ -2,6 +2,7 @@
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "../../layouts/CourseContentLayout.astro";
+import CollectionPager from "../../components/CollectionPager.astro";
 import { siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
@@ -37,6 +38,7 @@ const description = person.data.description;
   heroImageAlt={photoAlt}
   {...siteConfig}
 >
+  <CollectionPager variant="back" backHref="/people/" backLabel="People" />
   <dl>
     {roleLabel && (
       <>

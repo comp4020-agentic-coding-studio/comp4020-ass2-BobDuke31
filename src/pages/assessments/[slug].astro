@@ -5,20 +5,24 @@ import RelatedContent from "astro-course-university/components/RelatedContent.as
 import SpecList from "astro-course-university/components/SpecList.astro";
 import Callout from "astro-theme-university/components/Callout.astro";
 import ContentLayout from "../../layouts/CourseContentLayout.astro";
+import CollectionPager from "../../components/CollectionPager.astro";
 import MarkingModel from "../../components/MarkingModel.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
-  const assessments = await getPublishedCollection("assessments");
-  return assessments.map((assessment) => ({
+  const assessments = (await getPublishedCollection("assessments")).sort(
+    (a, b) => a.data.week - b.data.week,
+  );
+  return assessments.map((assessment, index) => ({
     params: { slug: assessment.id },
-    props: { assessment },
+    props: { assessment, prev: assessments[index - 1], next: assessments[index + 1] },
   }));
 }
 
-const { assessment } = Astro.props;
+const { assessment, prev, next } = Astro.props;
 const { Content } = await render(assessment);
+const neighbourLabel = (entry: typeof assessment) => `Week ${entry.data.week}: ${entry.data.title}`;
 ---
 
 <ContentLayout
@@ -26,6 +30,7 @@ const { Content } = await render(assessment);
   description={assessment.data.description}
   {...siteConfig}
 >
+  <CollectionPager variant="back" backHref="/assessments/" backLabel="Assessment" />
   {
     assessment.data.draft && (
       <Callout type="warning">
@@ -44,4 +49,9 @@ const { Content } = await render(assessment);
   </SpecList>
   {assessment.data.marking && <MarkingModel marking={assessment.data.marking} />}
   <RelatedContent entry={assessment} collections={graphCollections} />
+  <CollectionPager
+    variant="pager"
+    prev={prev && { href: `/assessments/${prev.id}/`, label: neighbourLabel(prev) }}
+    next={next && { href: `/assessments/${next.id}/`, label: neighbourLabel(next) }}
+  />
 </ContentLayout>

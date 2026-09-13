@@ -3,6 +3,11 @@
 // content at three points in the course rather than three bespoke widgets.
 // Each `mode` demonstrates that week's own thesis by making the reader
 // cause a failure and watch the design respond to it, live.
+//
+// Checkpoint and juice modes show both sides of their comparison
+// *simultaneously* on one click, rather than asking the reader to run a
+// toggle/radio twice and remember what the other setting felt like — the
+// interface carries the comparison, not the surrounding prose.
 import Icon from "astro-theme-university/components/Icon.astro";
 
 interface Props {
@@ -13,9 +18,9 @@ interface Props {
 const { mode, heading } = Astro.props;
 
 const defaultHeading: Record<Props["mode"], string> = {
-  checkpoint: "Try it: two respawn policies, one hazard",
+  checkpoint: "Try it: two respawn policies, one hazard, at the same time",
   assist: "Try it: the same timing window, with and without assistance",
-  juice: "Try it: identical outcome, two different feedback treatments",
+  juice: "Try it: two blocks, identical outcome, one button",
 };
 
 // Kept in sync with the matching constants in the checkpoint <script> below
@@ -23,6 +28,16 @@ const defaultHeading: Record<Props["mode"], string> = {
 // is the browser-side simulation (where the marker actually moves).
 const checkpointAt = 45;
 const hazardAt = 78;
+
+const checkpointTracks = [
+  { key: "punishing", label: "Punishing", sub: "back to the start" },
+  { key: "generous", label: "Generous", sub: "back to the last flag" },
+] as const;
+
+const juiceColumns = [
+  { key: "off", label: "No juice", juiced: false },
+  { key: "on", label: "Juice on", juiced: true },
+] as const;
 ---
 
 <fs-live-demo data-mode={mode} class="fs-demo fs-panel">
@@ -31,56 +46,53 @@ const hazardAt = 78;
   {
     mode === "checkpoint" && (
       <>
-        <div class="fs-demo-stage" data-role="stage">
-          <p class="fs-demo-state fs-badge" data-role="state" aria-hidden="true">
-            Ready
-          </p>
-          <div class="fs-demo-track" data-role="track">
-            <div class="fs-demo-point fs-demo-point--start" style="left:0%">
-              <span class="fs-demo-point-dot" aria-hidden="true" />
+        <div class="fs-demo-tracks">
+          {checkpointTracks.map((track) => (
+            <div class="fs-demo-stage" data-role="stage" data-track={track.key}>
+              <p class="fs-demo-stage-heading">
+                {track.label} <span class="fs-demo-stage-sub">— {track.sub}</span>
+              </p>
+              <p class="fs-demo-state fs-badge" data-role="state" aria-hidden="true">
+                Ready
+              </p>
+              <div class="fs-demo-track" data-role="track">
+                <div class="fs-demo-point fs-demo-point--start" style="left:0%">
+                  <span class="fs-demo-point-dot" aria-hidden="true" />
+                </div>
+                <div
+                  class="fs-demo-point fs-demo-point--checkpoint"
+                  data-role="checkpoint-point"
+                  style={`left:${checkpointAt}%`}
+                >
+                  <span class="fs-demo-point-dot" aria-hidden="true">
+                    <Icon name="triangle-flag" size="0.75em" />
+                  </span>
+                </div>
+                <div class="fs-demo-point fs-demo-point--hazard" style={`left:${hazardAt}%`}>
+                  <span class="fs-demo-point-dot" aria-hidden="true">⚠</span>
+                </div>
+                <div class="fs-demo-point fs-demo-point--finish" style="left:100%">
+                  <span class="fs-demo-point-dot" aria-hidden="true">
+                    <Icon name="trophy" size="0.75em" />
+                  </span>
+                </div>
+                <div class="fs-demo-marker" data-role="marker">
+                  <span class="fs-demo-marker-label" aria-hidden="true">You</span>
+                </div>
+              </div>
+              <div class="fs-demo-track-labels" aria-hidden="true">
+                <span style="left:0%">Start</span>
+                <span style={`left:${checkpointAt}%`}>Checkpoint</span>
+                <span style={`left:${hazardAt}%`}>Hazard</span>
+                <span style="left:100%">Finish</span>
+              </div>
+              <p class="fs-demo-loss" data-role="loss" aria-hidden="true" />
             </div>
-            <div
-              class="fs-demo-point fs-demo-point--checkpoint"
-              data-role="checkpoint-point"
-              style={`left:${checkpointAt}%`}
-            >
-              <span class="fs-demo-point-dot" aria-hidden="true">
-                <Icon name="triangle-flag" size="0.75em" />
-              </span>
-            </div>
-            <div class="fs-demo-point fs-demo-point--hazard" style={`left:${hazardAt}%`}>
-              <span class="fs-demo-point-dot" aria-hidden="true">⚠</span>
-            </div>
-            <div class="fs-demo-point fs-demo-point--finish" style="left:100%">
-              <span class="fs-demo-point-dot" aria-hidden="true">
-                <Icon name="trophy" size="0.75em" />
-              </span>
-            </div>
-            <div class="fs-demo-marker" data-role="marker">
-              <span class="fs-demo-marker-label" aria-hidden="true">You</span>
-            </div>
-          </div>
-          <div class="fs-demo-track-labels" aria-hidden="true">
-            <span style="left:0%">Start</span>
-            <span style={`left:${checkpointAt}%`}>Checkpoint</span>
-            <span style={`left:${hazardAt}%`}>Hazard</span>
-            <span style="left:100%">Finish</span>
-          </div>
+          ))}
         </div>
         <div class="fs-demo-controls">
-          <fieldset>
-            <legend>Respawn policy</legend>
-            <label>
-              <input type="radio" name={`policy-${mode}`} value="start" checked /> Punishing —
-              back to the start
-            </label>
-            <label>
-              <input type="radio" name={`policy-${mode}`} value="checkpoint" /> Generous — back
-              to the last flag
-            </label>
-          </fieldset>
-          <button type="button" data-action="attempt">
-            <Icon name="play" class="fs-btn-icon" /> Attempt the run
+          <button type="button" class="at-button" data-action="attempt">
+            <Icon name="play" class="fs-btn-icon" /> Run the hazard
           </button>
         </div>
       </>
@@ -101,7 +113,7 @@ const hazardAt = 78;
             <input type="checkbox" data-role="assist-toggle" /> Assist Mode: widen the window and
             slow the timing
           </label>
-          <button type="button" data-action="jump">
+          <button type="button" class="at-button" data-action="jump">
             <Icon name="arrow-up-circle" class="fs-btn-icon" /> Jump
           </button>
         </div>
@@ -112,33 +124,38 @@ const hazardAt = 78;
   {
     mode === "juice" && (
       <>
-        <div class="fs-demo-stage" data-role="stage">
-          <p class="fs-demo-state fs-badge" data-role="state" aria-hidden="true">
-            Ready
-          </p>
-          <div class="fs-demo-block-wrap">
-            <div class="fs-demo-block" data-role="block">
-              ▮
+        <div class="fs-demo-columns">
+          {juiceColumns.map((column) => (
+            <div class="fs-demo-stage" data-role="stage" data-juice={column.juiced ? "true" : "false"}>
+              <p class="fs-demo-stage-heading">{column.label}</p>
+              <p class="fs-demo-state fs-badge" data-role="state" aria-hidden="true">
+                Ready
+              </p>
+              <div class="fs-demo-block-wrap">
+                <div class="fs-demo-block" data-role="block">
+                  ▮
+                </div>
+                {column.juiced && <div class="fs-demo-shards" data-role="shards" aria-hidden="true" />}
+              </div>
+              {column.juiced && (
+                <>
+                  <div class="fs-demo-impact-flash" data-role="impact-flash" aria-hidden="true" />
+                  <p class="fs-demo-impact-pop" data-role="impact-pop" aria-hidden="true" />
+                </>
+              )}
+              <div class="fs-demo-meter">
+                <span class="fs-demo-meter-label">Felt impact</span>
+                <div class="fs-demo-meter-track">
+                  <div class="fs-demo-meter-fill" data-role="meter-fill" />
+                </div>
+              </div>
             </div>
-            <div class="fs-demo-shards" data-role="shards" aria-hidden="true" />
-          </div>
-          <div class="fs-demo-impact-flash" data-role="impact-flash" aria-hidden="true" />
-          <p class="fs-demo-impact-pop" data-role="impact-pop" aria-hidden="true" />
+          ))}
         </div>
         <div class="fs-demo-controls">
-          <label class="fs-demo-toggle">
-            <input type="checkbox" data-role="juice-toggle" checked /> Juice on: shake, flash and
-            pulse feedback
-          </label>
-          <button type="button" data-action="break">
-            <Icon name="hammer" class="fs-btn-icon" /> Break the block
+          <button type="button" class="at-button" data-action="break">
+            <Icon name="hammer" class="fs-btn-icon" /> Break both blocks
           </button>
-        </div>
-        <div class="fs-demo-meter">
-          <span class="fs-demo-meter-label">Felt impact</span>
-          <div class="fs-demo-meter-track">
-            <div class="fs-demo-meter-fill" data-role="meter-fill" />
-          </div>
         </div>
       </>
     )
@@ -147,12 +164,12 @@ const hazardAt = 78;
   <p class="fs-demo-status" data-role="status" aria-live="polite">
     {
       mode === "checkpoint" &&
-        "Choose a respawn policy, then attempt the run and watch what a death costs you."
+        "Press Run the hazard — both policies hit the same hazard at the same instant, and only the respawn differs."
     }
     {mode === "assist" && "Press Jump when the cursor is inside the zone."}
     {
       mode === "juice" &&
-        "Same block, same outcome either way — press Break and watch how differently it registers."
+        "Press Break both blocks — same outcome on each, watch how differently it registers."
     }
   </p>
   <p class="fs-demo-stats" data-role="stats" aria-live="off"></p>
@@ -183,9 +200,62 @@ const hazardAt = 78;
     margin-inline-end: 0.35em;
   }
 
+  .fs-demo-tracks {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .fs-demo-columns {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 32rem) {
+    .fs-demo-columns {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .fs-demo-tracks .fs-demo-stage + .fs-demo-stage,
+  .fs-demo-columns .fs-demo-stage {
+    border-top: 1px solid color-mix(in srgb, var(--at-tertiary) 25%, transparent);
+    padding-top: 1.1rem;
+  }
+
+  .fs-demo-columns .fs-demo-stage {
+    border-top: none;
+    border-inline-start: 1px solid color-mix(in srgb, var(--at-tertiary) 25%, transparent);
+    padding-inline-start: 1.1rem;
+  }
+
+  @media (max-width: 32rem) {
+    .fs-demo-columns .fs-demo-stage {
+      border-inline-start: none;
+      border-top: 1px solid color-mix(in srgb, var(--at-tertiary) 25%, transparent);
+      padding-inline-start: 0;
+      padding-top: 1.1rem;
+    }
+
+    .fs-demo-columns .fs-demo-stage:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+  }
+
+  .fs-demo-stage-heading {
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+  }
+
+  .fs-demo-stage-sub {
+    font-weight: 400;
+    color: var(--at-text-secondary);
+  }
+
   .fs-demo-stage {
     position: relative;
-    padding: 1.5rem 0 0.25rem;
+    padding-top: 1.5rem;
   }
 
   .fs-demo-state {
@@ -224,6 +294,14 @@ const hazardAt = 78;
     text-transform: uppercase;
     color: var(--at-text-secondary);
     white-space: nowrap;
+  }
+
+  .fs-demo-loss {
+    min-height: 1.3em;
+    margin: 0.4rem 0 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--fs-danger);
   }
 
   .fs-demo-point {
@@ -500,20 +578,6 @@ const hazardAt = 78;
     margin-block: 1rem;
   }
 
-  .fs-demo-controls fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .fs-demo-controls legend {
-    font-weight: 600;
-    padding: 0;
-  }
-
   .fs-demo-toggle {
     display: flex;
     align-items: center;
@@ -579,7 +643,6 @@ const hazardAt = 78;
   class LiveDemo extends HTMLElement {
     attempts = 0;
     successes = 0;
-    position = 0;
 
     connectedCallback() {
       const mode = this.dataset.mode;
@@ -612,14 +675,17 @@ const hazardAt = 78;
 
     // A death and a success shouldn't flash the same colour --- "bad" reaches
     // for the danger ring, "good" (unused here today, kept for future modes)
-    // for the success one.
+    // for the success one. Applies to every `[data-role="stage"]` in this
+    // demo at once, so a multi-stage mode (checkpoint's two tracks) flashes
+    // together rather than just the first one found.
     flash(kind: "bad" | "good" = "bad") {
-      const stage = this.querySelector<HTMLElement>('[data-role="stage"]');
-      if (!stage) return;
-      stage.classList.remove("fs-shake", "fs-flash", "fs-flash--danger");
-      // Force reflow so the animation can restart on repeated failures.
-      void stage.offsetWidth;
-      stage.classList.add("fs-shake", kind === "bad" ? "fs-flash--danger" : "fs-flash");
+      const stages = this.querySelectorAll<HTMLElement>('[data-role="stage"]');
+      stages.forEach((stage) => {
+        stage.classList.remove("fs-shake", "fs-flash", "fs-flash--danger");
+        // Force reflow so the animation can restart on repeated failures.
+        void stage.offsetWidth;
+        stage.classList.add("fs-shake", kind === "bad" ? "fs-flash--danger" : "fs-flash");
+      });
     }
 
     // Every state change gets its own word in the corner, not just a colour
@@ -635,99 +701,111 @@ const hazardAt = 78;
       el.classList.add("fs-pop");
     }
 
+    // Both respawn policies face the exact same hazard at the exact same
+    // instant --- one shared random roll drives both tracks, so the only
+    // thing that can differ between them is where each one wakes back up.
     setupCheckpoint() {
-      const marker = this.querySelector<HTMLElement>('[data-role="marker"]');
-      const state = this.querySelector<HTMLElement>('[data-role="state"]');
-      const checkpointPoint = this.querySelector<HTMLElement>('[data-role="checkpoint-point"]');
-      const button = this.querySelector<HTMLButtonElement>('[data-action="attempt"]');
-      const radios = this.querySelectorAll<HTMLInputElement>('input[name^="policy"]');
-      // Kept in sync with the Astro-side constants above --- those position
-      // the track's points, these drive the simulation.
       const hazardAt = 78;
       const checkpointAt = 45;
       const msPerPercent = 9;
+      const button = this.querySelector<HTMLButtonElement>('[data-action="attempt"]');
+      let attempts = 0;
       let deaths = 0;
 
-      const moveTo = (target: number, instant = false) => {
-        if (!marker) return 0;
-        const distance = Math.abs(target - this.position);
+      const trackConfig = [
+        { key: "punishing", label: "Punishing", respawnAt: 0 },
+        { key: "generous", label: "Generous", respawnAt: checkpointAt },
+      ];
+
+      const tracks = trackConfig.map((config) => {
+        const stage = this.querySelector<HTMLElement>(`[data-track="${config.key}"]`);
+        return {
+          ...config,
+          marker: stage?.querySelector<HTMLElement>('[data-role="marker"]') ?? null,
+          state: stage?.querySelector<HTMLElement>('[data-role="state"]') ?? null,
+          checkpointPoint: stage?.querySelector<HTMLElement>('[data-role="checkpoint-point"]') ?? null,
+          lossEl: stage?.querySelector<HTMLElement>('[data-role="loss"]') ?? null,
+          position: 0,
+          totalLost: 0,
+        };
+      });
+
+      const moveTo = (track: (typeof tracks)[number], target: number, instant = false) => {
+        if (!track.marker) return 0;
+        const distance = Math.abs(target - track.position);
         const duration = instant ? 0 : Math.max(150, distance * msPerPercent);
-        marker.classList.toggle("fs-demo-marker--snap", instant);
-        marker.style.left = `${target}%`;
-        this.position = target;
+        track.marker.classList.toggle("fs-demo-marker--snap", instant);
+        track.marker.style.left = `${target}%`;
+        track.position = target;
         return duration;
       };
 
-      const setControlsDisabled = (disabled: boolean) => {
-        if (button) button.disabled = disabled;
-        radios.forEach((radio) => (radio.disabled = disabled));
-      };
-
-      moveTo(0, true);
-
-      radios.forEach((radio) =>
-        radio.addEventListener("change", () => {
-          marker?.classList.remove("fs-demo-marker--hit", "fs-demo-marker--cleared");
-          moveTo(0, true);
-          this.setState(state, "Ready");
-          this.status("Policy set. Press Attempt the run to start from the top.");
-        }),
-      );
+      tracks.forEach((track) => moveTo(track, 0, true));
 
       button?.addEventListener("click", () => {
-        if (!marker || button.disabled) return;
-        setControlsDisabled(true);
-        marker.classList.remove("fs-demo-marker--hit", "fs-demo-marker--cleared");
-        checkpointPoint?.classList.add("fs-demo-point--passed");
-        this.setState(state, "Running…");
+        if (!button || button.disabled) return;
+        button.disabled = true;
+        tracks.forEach((track) => {
+          track.marker?.classList.remove("fs-demo-marker--hit", "fs-demo-marker--cleared");
+          track.checkpointPoint?.classList.add("fs-demo-point--passed");
+          this.setState(track.state, "Running…");
+        });
         this.status("Running toward the hazard…");
-        const runMs = moveTo(hazardAt);
+        const runMs = Math.max(...tracks.map((track) => moveTo(track, hazardAt)));
 
         window.setTimeout(() => {
           const died = Math.random() < 0.6;
+          attempts += 1;
           this.pushHistory(died ? "miss" : "hit");
-          this.attempts += 1;
 
           if (died) {
             deaths += 1;
-            marker.classList.add("fs-demo-marker--hit");
+            tracks.forEach((track) => track.marker?.classList.add("fs-demo-marker--hit"));
             this.flash("bad");
-            this.setState(state, "Hit!", "danger");
-            const policy = this.querySelector<HTMLInputElement>(
-              'input[name^="policy"]:checked',
-            )?.value;
-            const respawnAt = policy === "checkpoint" ? checkpointAt : 0;
-            this.status(
-              policy === "checkpoint"
-                ? "Hit the hazard. Generous policy: respawning at the last flag."
-                : "Hit the hazard. Punishing policy: respawning at the very start.",
-            );
+            tracks.forEach((track) => this.setState(track.state, "Hit!", "danger"));
+
+            const losses = tracks.map((track) => {
+              const lost = Math.round(hazardAt - track.respawnAt);
+              track.totalLost += lost;
+              if (track.lossEl) track.lossEl.textContent = `Lost ${lost}% of the run`;
+              return `${track.label} lost ${lost}%`;
+            });
+            this.status(`Hit the hazard. ${losses.join("; ")}.`);
+
             window.setTimeout(() => {
-              const respawnMs = moveTo(respawnAt);
+              const respawnMs = Math.max(...tracks.map((track) => moveTo(track, track.respawnAt)));
               window.setTimeout(() => {
-                marker.classList.remove("fs-demo-marker--hit");
-                this.setState(state, "Ready");
-                this.status("Ready — press Attempt the run to go again.");
-                setControlsDisabled(false);
+                tracks.forEach((track) => {
+                  track.marker?.classList.remove("fs-demo-marker--hit");
+                  this.setState(track.state, "Ready");
+                });
+                this.status("Ready — press Run the hazard to go again.");
+                button.disabled = false;
               }, respawnMs + 100);
             }, 500);
           } else {
-            marker.classList.add("fs-demo-marker--cleared");
-            this.setState(state, "Cleared!");
-            this.status("Cleared the run this time.");
+            tracks.forEach((track) => {
+              track.marker?.classList.add("fs-demo-marker--cleared");
+              if (track.lossEl) track.lossEl.textContent = "";
+            });
+            tracks.forEach((track) => this.setState(track.state, "Cleared!"));
+            this.status("Cleared the run — no death, so the respawn policy never came into play.");
             window.setTimeout(() => {
-              const resetMs = moveTo(0);
+              const resetMs = Math.max(...tracks.map((track) => moveTo(track, 0)));
               window.setTimeout(() => {
-                marker.classList.remove("fs-demo-marker--cleared");
-                this.setState(state, "Ready");
-                this.status("Ready — press Attempt the run to go again.");
-                setControlsDisabled(false);
+                tracks.forEach((track) => {
+                  track.marker?.classList.remove("fs-demo-marker--cleared");
+                  this.setState(track.state, "Ready");
+                });
+                this.status("Ready — press Run the hazard to go again.");
+                button.disabled = false;
               }, resetMs + 100);
             }, 700);
           }
 
+          const totals = tracks.map((track) => `${track.label} total lost: ${track.totalLost}%`);
           this.stats(
-            `${this.attempts} attempt${this.attempts === 1 ? "" : "s"} · ${deaths} death${deaths === 1 ? "" : "s"}`,
+            `${attempts} attempt${attempts === 1 ? "" : "s"} · ${deaths} death${deaths === 1 ? "" : "s"} · ${totals.join(" · ")}`,
           );
         }, runMs + 80);
       });
@@ -770,20 +848,27 @@ const hazardAt = 78;
       });
     }
 
+    // Both blocks break on the same click --- the outcome (block gone) is
+    // identical either way, so the only thing left to compare is how each
+    // column announces it, side by side, in the same instant.
     setupJuice() {
-      const toggle = this.querySelector<HTMLInputElement>('[data-role="juice-toggle"]');
-      const state = this.querySelector<HTMLElement>('[data-role="state"]');
-      const block = this.querySelector<HTMLElement>('[data-role="block"]');
-      const stage = this.querySelector<HTMLElement>('[data-role="stage"]');
-      const shards = this.querySelector<HTMLElement>('[data-role="shards"]');
-      const impactFlash = this.querySelector<HTMLElement>('[data-role="impact-flash"]');
-      const impactPop = this.querySelector<HTMLElement>('[data-role="impact-pop"]');
-      const meterFill = this.querySelector<HTMLElement>('[data-role="meter-fill"]');
       const button = this.querySelector<HTMLButtonElement>('[data-action="break"]');
       let breaks = 0;
 
-      const spawnShards = () => {
-        if (!shards) return;
+      const columns = Array.from(this.querySelectorAll<HTMLElement>('[data-role="stage"]')).map(
+        (stage) => ({
+          stage,
+          juiced: stage.dataset.juice === "true",
+          state: stage.querySelector<HTMLElement>('[data-role="state"]'),
+          block: stage.querySelector<HTMLElement>('[data-role="block"]'),
+          shards: stage.querySelector<HTMLElement>('[data-role="shards"]'),
+          impactFlash: stage.querySelector<HTMLElement>('[data-role="impact-flash"]'),
+          impactPop: stage.querySelector<HTMLElement>('[data-role="impact-pop"]'),
+          meterFill: stage.querySelector<HTMLElement>('[data-role="meter-fill"]'),
+        }),
+      );
+
+      const spawnShards = (shards: HTMLElement) => {
         shards.innerHTML = "";
         for (let i = 0; i < 8; i += 1) {
           const shard = document.createElement("span");
@@ -797,65 +882,65 @@ const hazardAt = 78;
         shards.classList.add("fs-demo-shards--active");
       };
 
-      const setMeter = (pct: number, snap: boolean) => {
+      const setMeter = (meterFill: HTMLElement | null, pct: number, snap: boolean) => {
         if (!meterFill) return;
         meterFill.style.transitionDuration = snap ? "80ms" : "600ms";
         meterFill.style.width = `${pct}%`;
       };
 
       button?.addEventListener("click", () => {
-        if (!block || button.disabled) return;
-        const juiced = toggle?.checked ?? true;
+        if (button.disabled) return;
         button.disabled = true;
+        breaks += 1;
 
-        const resolve = () => {
-          breaks += 1;
-          block.style.opacity = "0";
+        // A brief freeze before the burst is what makes the juiced column
+        // read as an impact rather than a glitch --- the "hit-stop" every
+        // juiced hit in a real game leans on. Both columns wait for it so
+        // they still resolve on the same tick.
+        window.setTimeout(() => {
+          columns.forEach((column) => {
+            if (!column.block) return;
+            column.block.style.opacity = "0";
 
-          if (juiced) {
-            spawnShards();
-            stage?.classList.remove("fs-shake");
-            void stage?.offsetWidth;
-            stage?.classList.add("fs-shake");
-            if (impactFlash) {
-              impactFlash.classList.remove("fs-demo-impact-flash--active");
-              void impactFlash.offsetWidth;
-              impactFlash.classList.add("fs-demo-impact-flash--active");
+            if (column.juiced) {
+              if (column.shards) spawnShards(column.shards);
+              column.stage.classList.remove("fs-shake");
+              void column.stage.offsetWidth;
+              column.stage.classList.add("fs-shake");
+              if (column.impactFlash) {
+                column.impactFlash.classList.remove("fs-demo-impact-flash--active");
+                void column.impactFlash.offsetWidth;
+                column.impactFlash.classList.add("fs-demo-impact-flash--active");
+              }
+              if (column.impactPop) {
+                column.impactPop.textContent = "IMPACT!";
+                column.impactPop.classList.remove("fs-demo-impact-pop--active");
+                void column.impactPop.offsetWidth;
+                column.impactPop.classList.add("fs-demo-impact-pop--active");
+              }
+              this.setState(column.state, "Impact!", "danger");
+              setMeter(column.meterFill, 100, true);
+              window.setTimeout(() => setMeter(column.meterFill, 0, false), 450);
+            } else {
+              this.setState(column.state, "Gone.");
+              setMeter(column.meterFill, 4, true);
+              window.setTimeout(() => setMeter(column.meterFill, 0, false), 300);
             }
-            if (impactPop) {
-              impactPop.textContent = "IMPACT!";
-              impactPop.classList.remove("fs-demo-impact-pop--active");
-              void impactPop.offsetWidth;
-              impactPop.classList.add("fs-demo-impact-pop--active");
-            }
-            this.setState(state, "Impact!", "danger");
-            setMeter(100, true);
-            window.setTimeout(() => setMeter(0, false), 450);
-            this.status("Impact! Same block, same outcome — only the feedback changed.");
-          } else {
-            this.setState(state, "Gone.");
-            setMeter(4, true);
-            window.setTimeout(() => setMeter(0, false), 300);
-            this.status("Gone. Identical outcome, nothing announced it.");
-          }
+          });
 
-          this.stats(`Outcome unaffected by the toggle — block #${breaks} destroyed either way.`);
+          this.status(
+            `Break #${breaks}: the outcome is identical on both blocks — only the feedback differed.`,
+          );
+          this.stats(`${breaks} break${breaks === 1 ? "" : "s"} so far.`);
 
           window.setTimeout(() => {
-            block.style.opacity = "1";
-            this.setState(state, "Ready");
+            columns.forEach((column) => {
+              if (column.block) column.block.style.opacity = "1";
+              this.setState(column.state, "Ready");
+            });
             button.disabled = false;
           }, 500);
-        };
-
-        if (juiced) {
-          // A brief freeze before the burst is what makes it read as an
-          // impact rather than a glitch --- the "hit-stop" every juiced hit
-          // in a real game leans on.
-          window.setTimeout(resolve, 90);
-        } else {
-          resolve();
-        }
+        }, 90);
       });
     }
   }

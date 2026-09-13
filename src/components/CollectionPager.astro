@@ -1,0 +1,101 @@
+---
+// Every collection detail page (session/lecture/assessment/people) renders
+// straight from astro-theme-university's ContentLayout, which has no "back
+// to the list" or "next/previous week" affordance of its own — the only
+// return path was re-clicking the top nav. This is the explicit back/continue
+// action that was missing, built on the theme's own `.at-button` system
+// rather than a bespoke widget.
+//
+// `variant="back"` is the top-of-page return path; `variant="pager"` is the
+// bottom-of-page continue/retreat pair. Two variants of one component, not
+// two components, so both stay visually and semantically one system.
+import Icon from "astro-theme-university/components/Icon.astro";
+import { withBase } from "astro-theme-university/url";
+
+interface Neighbour {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  variant: "back" | "pager";
+  backHref?: string;
+  backLabel?: string;
+  prev?: Neighbour;
+  next?: Neighbour;
+}
+
+const { variant, backHref, backLabel, prev, next } = Astro.props;
+---
+
+{
+  variant === "back" && backHref && (
+    <p class="fs-pager-back">
+      <a href={withBase(backHref)} class="at-button at-button--ghost at-button--small">
+        <Icon name="arrow-left" size="1em" /> Back to {backLabel}
+      </a>
+    </p>
+  )
+}
+
+{
+  variant === "pager" && (prev || next) && (
+    <nav class="fs-pager" aria-label="Week navigation">
+      {prev ? (
+        <a href={withBase(prev.href)} class="at-button at-button--outline fs-pager-link fs-pager-link--prev">
+          <Icon name="arrow-left" size="1em" />
+          <span class="fs-pager-link-label">{prev.label}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {next ? (
+        <a href={withBase(next.href)} class="at-button at-button--outline fs-pager-link fs-pager-link--next">
+          <span class="fs-pager-link-label">{next.label}</span>
+          <Icon name="arrow-right" size="1em" />
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .fs-pager-back {
+    margin-block: 0 1.5rem;
+  }
+
+  .fs-pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 1rem;
+    margin-block: 2.5rem 0;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid color-mix(in srgb, var(--at-tertiary) 40%, transparent);
+  }
+
+  .fs-pager-link {
+    max-width: 48%;
+    text-align: start;
+  }
+
+  .fs-pager-link--next {
+    margin-inline-start: auto;
+    text-align: end;
+    flex-direction: row-reverse;
+  }
+
+  .fs-pager-link-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 30rem) {
+    .fs-pager-link-label {
+      display: none;
+    }
+  }
+</style>

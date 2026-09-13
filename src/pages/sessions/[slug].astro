@@ -4,17 +4,24 @@ import { getPublishedCollection } from "astro-course-university/content";
 import RelatedContent from "astro-course-university/components/RelatedContent.astro";
 import SpecList from "astro-course-university/components/SpecList.astro";
 import ContentLayout from "../../layouts/CourseContentLayout.astro";
+import CollectionPager from "../../components/CollectionPager.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
-  const sessions = await getPublishedCollection("sessions");
-  return sessions.map((session) => ({ params: { slug: session.id }, props: { session } }));
+  const sessions = (await getPublishedCollection("sessions")).sort(
+    (a, b) => a.data.week - b.data.week,
+  );
+  return sessions.map((session, index) => ({
+    params: { slug: session.id },
+    props: { session, prev: sessions[index - 1], next: sessions[index + 1] },
+  }));
 }
 
-const { session } = Astro.props;
+const { session, prev, next } = Astro.props;
 const { Content } = await render(session);
+const neighbourLabel = (entry: typeof session) => `Week ${entry.data.week}: ${entry.data.title}`;
 ---
 
 <ContentLayout
@@ -22,6 +29,7 @@ const { Content } = await render(session);
   description={session.data.description}
   {...siteConfig}
 >
+  <CollectionPager variant="back" backHref="/sessions/" backLabel={sessionLabels.plural} />
   <p><strong>{formatCourseDate(session.data.date)}</strong></p>
   <Content />
   <SpecList spec={session.data.spec}>
@@ -30,4 +38,9 @@ const { Content } = await render(session);
   </SpecList>
   <TeachingTeam teachers={session.data.teachers} />
   <RelatedContent entry={session} collections={graphCollections} />
+  <CollectionPager
+    variant="pager"
+    prev={prev && { href: `/sessions/${prev.id}/`, label: neighbourLabel(prev) }}
+    next={next && { href: `/sessions/${next.id}/`, label: neighbourLabel(next) }}
+  />
 </ContentLayout>
