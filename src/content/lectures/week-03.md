@@ -9,6 +9,8 @@ teachers:
   - marisol-quaye
 related:
   - sessions/03-arcade-economy
+heroImage: ../../assets/images/arcade-museum.jpg
+heroImageAlt: Rows of illuminated arcade cabinets lined up inside the American Classic Arcade Museum
 ---
 
 "Three lives" is not a design decision about challenge. It's a decision about

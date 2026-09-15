@@ -42,7 +42,11 @@ const { variant, backHref, backLabel, prev, next } = Astro.props;
   variant === "pager" && (prev || next) && (
     <nav class="fs-pager" aria-label="Week navigation">
       {prev ? (
-        <a href={withBase(prev.href)} class="at-button at-button--outline fs-pager-link fs-pager-link--prev">
+        <a
+          href={withBase(prev.href)}
+          class="at-button at-button--outline fs-pager-link fs-pager-link--prev"
+          data-direction="prev"
+        >
           <Icon name="arrow-left" size="1em" />
           <span class="fs-pager-link-label">{prev.label}</span>
         </a>
@@ -50,7 +54,11 @@ const { variant, backHref, backLabel, prev, next } = Astro.props;
         <span />
       )}
       {next ? (
-        <a href={withBase(next.href)} class="at-button at-button--outline fs-pager-link fs-pager-link--next">
+        <a
+          href={withBase(next.href)}
+          class="at-button at-button--outline fs-pager-link fs-pager-link--next"
+          data-direction="next"
+        >
           <span class="fs-pager-link-label">{next.label}</span>
           <Icon name="arrow-right" size="1em" />
         </a>
@@ -99,3 +107,27 @@ const { variant, backHref, backLabel, prev, next } = Astro.props;
     }
   }
 </style>
+
+<script>
+  // Which pager link was actually clicked, if any --- read once per
+  // navigation by `astro:before-swap` and stamped onto the incoming <html>
+  // before the swap runs, so `failstate.css`'s directional
+  // `::view-transition-*(root)` rules can tell "next" from "prev" apart.
+  // Cleared on every swap so a later nav-bar click doesn't inherit a stale
+  // direction from an earlier pager click.
+  let pendingDirection: string | undefined;
+
+  document.addEventListener("click", (event) => {
+    const link = (event.target as HTMLElement).closest<HTMLElement>(".fs-pager-link");
+    pendingDirection = link?.dataset.direction;
+  });
+
+  document.addEventListener("astro:before-swap", (event) => {
+    if (pendingDirection) {
+      event.newDocument.documentElement.dataset.transitionDirection = pendingDirection;
+    } else {
+      delete event.newDocument.documentElement.dataset.transitionDirection;
+    }
+    pendingDirection = undefined;
+  });
+</script>

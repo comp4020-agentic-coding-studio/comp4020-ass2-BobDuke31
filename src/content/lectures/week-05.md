@@ -10,6 +10,8 @@ teachers:
 related:
   - sessions/05-permadeath
   - assessments/fail-state-postmortem
+heroImage: ../../assets/images/dcss-screenshot.png
+heroImageAlt: A tiles-mode screenshot of the roguelike Dungeon Crawl Stone Soup, showing the player's inventory, monsters and a summary panel
 ---
 
 Permadeath sounds like the absence of mercy: no checkpoint, no continue, the

@@ -111,6 +111,90 @@
   animation: fs-pop var(--fs-medium) var(--fs-ease);
 }
 
+/* Fail-States' own page-transition feel, riding the theme's existing native
+ * View Transitions wiring (BaseLayout mounts `<ClientRouter />`; Card/
+ * ContentLayout already share a `transition:name="card-title-<slug>"` for a
+ * free title-morph). This only touches the *rest* of the page --- the
+ * default browser cross-fade on `::view-transition-old/new(root)` --- with a
+ * "cleared" upward drift instead, the same displacement `fs-reveal` already
+ * uses elsewhere so leaving one page and entering the next reads as one
+ * consistent motion language rather than two unrelated ones. The browser
+ * does not gate its own view-transition animations on reduced motion by
+ * default --- that's the page's job, done below alongside every other
+ * keyframe this file defines. */
+@keyframes fs-view-out {
+  to {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+}
+
+@keyframes fs-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+::view-transition-old(root) {
+  animation: fs-view-out var(--fs-medium) var(--fs-ease) both;
+}
+
+::view-transition-new(root) {
+  animation: fs-view-in var(--fs-medium) var(--fs-ease) both;
+}
+
+/* `CollectionPager.astro`'s own <script> sets this on <html> just before an
+ * `astro:before-swap` triggered by clicking its prev/next pager --- not the
+ * default nav or a card link, which get the plain vertical drift above.
+ * Moving forward and back through the twelve-week run should read as motion
+ * along one line, not two identical fades, so "next" exits/enters leftward
+ * and "prev" exits/enters rightward, the same page-continuity idea a book or
+ * carousel uses. */
+@keyframes fs-view-out-left {
+  to {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+}
+
+@keyframes fs-view-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+}
+
+@keyframes fs-view-out-right {
+  to {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+}
+
+@keyframes fs-view-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+}
+
+:root[data-transition-direction="next"]::view-transition-old(root) {
+  animation-name: fs-view-out-left;
+}
+
+:root[data-transition-direction="next"]::view-transition-new(root) {
+  animation-name: fs-view-in-right;
+}
+
+:root[data-transition-direction="prev"]::view-transition-old(root) {
+  animation-name: fs-view-out-right;
+}
+
+:root[data-transition-direction="prev"]::view-transition-new(root) {
+  animation-name: fs-view-in-left;
+}
+
 /* Shared HUD-panel: the notched-corner container used by LiveDemo, the
    marking calculator and the homepage run preview, so the site reads as one
    piece of hardware rather than three components that each drew their own
@@ -121,6 +205,7 @@
   border: 1px solid color-mix(in srgb, var(--at-tertiary) 40%, transparent);
   clip-path: var(--fs-panel-clip);
   background: var(--at-bg-alt);
+  box-shadow: 0 1rem 2rem -1.5rem color-mix(in srgb, var(--at-primary) 55%, transparent);
 }
 
 .fs-panel::before {
@@ -195,6 +280,28 @@
   animation: fs-reveal var(--fs-medium) var(--fs-ease) both;
 }
 
+/* `astro-theme-university`'s own `.at-button` rules live inside
+ * `@layer at.components`; this file is imported unlayered (PageLayout.astro),
+ * so an unlayered rule here always wins regardless of selector specificity ---
+ * no `!important` needed to add the lift-on-hover depth every other
+ * interactive surface on the site already has (LiveDemo's controls restate
+ * the same thing deck-side, since decks don't load this file at all). */
+.at-button {
+  transition:
+    transform var(--fs-fast) var(--fs-ease),
+    box-shadow var(--fs-fast) var(--fs-ease);
+}
+
+.at-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem -0.5rem color-mix(in srgb, var(--at-primary) 55%, transparent);
+}
+
+.at-button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
 :is(a, button, [tabindex]):focus-visible {
   outline: 3px solid var(--at-primary);
   outline-offset: 2px;
@@ -213,5 +320,11 @@
 
   .fs-reveal-ready {
     opacity: 1;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

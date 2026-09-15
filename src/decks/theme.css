@@ -229,3 +229,50 @@
   padding: 0.3rem 1rem;
   font-size: 1.15rem;
 }
+
+/* `.image-credit` for an on-slide `![bg ...]` photo caption is already
+ * styled by astro-theme-university's own deck.css (bottom-right overlay,
+ * white/60% ink, legible over a dimmed photo) --- restating it here would
+ * only fight the platform's own purpose-built rule, so decks that credit a
+ * photo just use the class as-is with no project CSS of its own. */
+
+/* A widened timing window, made visible rather than just described --- the
+ * static counterpart to week 8's live `<LiveDemo mode="assist">`, morphed
+ * between two slides via Reveal auto-animate (`_animate: assist`, matched by
+ * `data-id="assist-window"`) so the width change is *seen* happening, not
+ * just two numbers on two slides. */
+.fs-assist-track {
+  position: relative;
+  height: 2.5rem;
+  background: var(--at-bg-alt);
+  border: 2px solid var(--at-tertiary);
+  border-radius: var(--at-border-radius);
+  overflow: hidden;
+}
+
+.fs-assist-window {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: var(--at-primary);
+}
+
+/* Same auto-animate trick for week 12's "juice" argument --- a meter that
+ * barely moves versus one that fills, morphed via `_animate: juice` /
+ * `data-id="juice-fill"` so the gap between "silent" and "loud" feedback is
+ * a motion the room watches, not a number they read. */
+.fs-juice-meter {
+  position: relative;
+  height: 2.5rem;
+  background: var(--at-bg-alt);
+  border: 2px solid var(--at-tertiary);
+  border-radius: var(--at-border-radius);
+  overflow: hidden;
+}
+
+.fs-juice-fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: var(--fs-danger, var(--at-secondary));
+}

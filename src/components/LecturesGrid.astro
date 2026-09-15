@@ -14,7 +14,13 @@ const visible = lectures.sort((a, b) => a.data.date.getTime() - b.data.date.getT
   <CardGrid columns={2}>
     {
       visible.map((lecture) => (
-        <Card headingLevel="h2" title={lecture.data.title} href={`/lectures/${lecture.id}/`}>
+        <Card
+          headingLevel="h2"
+          title={lecture.data.title}
+          href={`/lectures/${lecture.id}/`}
+          image={lecture.data.heroImage}
+          imageAlt={lecture.data.heroImageAlt}
+        >
           {lecture.data.interactive && (
             <p class="fs-badge fs-live-tag">
               <Icon name="flash" size="0.85em" /> Live demo inside

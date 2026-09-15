@@ -70,18 +70,89 @@ Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.
   `position: sticky`. This kind of platform archaeology (read the actual
   `node_modules` source, don't assume) found the free transition mechanism
   above too.
-- **Raster images are off the table; the site is image-free by design.** The
-  `Write` tool can't author binary formats, and `check-evidence.ts` requires
-  the four starter images be changed or removed. Rather than fight that, the
-  site leans into CSS/SVG/motion for its visual identity (inline SVG hearts,
-  the run map, the marking-weight bar) and the people/social-image slots go
-  without photos --- an explicit design decision, not an oversight. Note:
-  `astro-theme-university`'s `OpenGraph` component always encodes local
-  `socialImage`s to JPEG via `getImage()`, which can't rasterize SVG under
-  this project's fixed `astro.config.ts` (no `dangerouslyProcessSVG`) --- so
-  a hand-drawn SVG can't stand in for a social card either. `socialImage` is
-  therefore left unset in `src/site-config.ts` rather than pointed at a
-  format the pipeline can't process.
+- **The image-free era was a tooling gap, not a real constraint --- don't
+  reintroduce that mistake elsewhere.** An earlier pass declared the site
+  "image-free by design" because the `Write` tool can't author binary
+  formats. That reasoning was wrong: the actual blocker was authoring a
+  binary file from nothing, not images in general, and `curl`-ing an
+  already-openly-licensed file from the network sidesteps it completely.
+  A later pass sourced five real CC BY-SA 4.0 Wikimedia Commons photos ---
+  an arcade cabinet floor (week 3), a real trail-marker signpost (week 4,
+  the "the marked place you return to" that "checkpoint" is a metaphor
+  for), a roguelike's own tiles-mode UI (week 5), an Xbox Adaptive
+  Controller in use (week 8), a pinball machine's lit playfield (week 12,
+  the physical object "juice" describes) --- each chosen because it grounds
+  that week's abstract idea in a concrete referent no CSS/SVG shape would,
+  not to fill a quota. `CREDITS.md` records title/author/licence/source per
+  image; that licence is separate from this project's own declared content
+  licence (`src/site-config.ts`'s `licence`), the same way any embedded
+  third-party media's rights stay distinct from the surrounding page's.
+  Don't force an image into a slot that doesn't need one --- seven of
+  twelve weeks still carry no photo, on purpose, because nothing sourced
+  for them beat the existing treatment. The people/social-image slots
+  staying photo-free is a *separate*, still-live decision: a stock photo
+  standing in for a fictional convenor/tutor is misrepresentation, not
+  illustration, which is a different problem than "couldn't author a
+  file." Two platform mechanics worth knowing before adding another one:
+  `astro-theme-university`'s `ContentLayout`/`BaseLayout` already accept
+  undocumented `heroImage`/`heroImageAlt` props (real fields on
+  `BaseLayoutProps`, just not mentioned in the narrower
+  `ContentLayoutProps`) that render a full `Hero` banner for free, and
+  `astromotion`'s deck engine only copies files living under `src/decks/`
+  into the production build (`asset-collector.ts`'s `astro:build:done`
+  hook) --- an image used in a deck's `![bg ...]` directive must have a
+  copy physically inside `src/decks/`, not just `src/assets/`, or it 404s
+  in production while looking fine in dev. `astro-theme-university`'s
+  `OpenGraph` component still always encodes local `socialImage`s to JPEG
+  via `getImage()`, which can't rasterize SVG under this project's fixed
+  `astro.config.ts` (no `dangerouslyProcessSVG`) --- `socialImage` stays
+  unset in `src/site-config.ts` for that unrelated reason.
+- **A deck's own markdown already has a background-image and caption
+  syntax --- read it before building a component (or a class) for the same
+  job.** astromotion's `![bg cover|left:40%|blur:8px](...)` directive
+  (handled by its `remark-deck-bg` plugin) produces either a full-bleed
+  background or a `.split-content`/`.split-image` two-column layout with
+  zero extra component work; the site now uses it in three decks. The
+  caption class it needs (`.image-credit`, bottom-right overlay, legible
+  white ink) turned out to already exist too --- not in astromotion, but in
+  `astro-theme-university`'s own `deck.css`, easy to miss because the two
+  packages split the deck styling between them. First pass restated the
+  class in this project's `src/decks/theme.css` before noticing the
+  platform one, and the restatement silently won the cascade (same
+  specificity, later in source order via the `@import`) --- wrong position
+  entirely, caught by reading `deck.css` itself, not by any check. A full
+  bg photo behind a title also gets its own scrim for free: `_class: hero`
+  on a slide with a `![bg]` reuses the exact gradient-overlay treatment the
+  website's own `Hero.astro` uses, so a photo can run at natural brightness
+  and still leave heading text legible, rather than pre-darkening the photo
+  as a substitute contrast fix. Separately, astromotion hardcodes Reveal.js's
+  `transition` option to `"none"` ---
+  classic slide/fade/zoom and fragment bullet-reveals are not available
+  without forking a fixed platform, which this project won't do.
+  `_animate`/`_animate: id` (Reveal auto-animate, a FLIP-style morph
+  between two adjacent slides sharing a `data-id`) is the *one* real
+  transition primitive the engine exposes end-to-end, used for the
+  twelve-week arc timeline (week 1 to week 12) and now also for two small
+  before/after morphs (a widening timing window in week 8, a filling juice
+  meter in week 12) that make each week's live `<LiveDemo>` argument
+  visible once before the room drives it themselves.
+- **The View Transitions API does not gate itself on reduced motion ---
+  that is the page's job, every time.** Adding custom
+  `::view-transition-old/new(root)` rules to `failstate.css` for a
+  Fail-States-flavoured page transition, it would have been easy to assume
+  `<ClientRouter />` already handles `prefers-reduced-motion` the way it
+  handles routing and scroll restoration. It doesn't: nothing in Astro's
+  own transitions runtime checks it, so a custom `::view-transition-*` rule
+  ships full motion to a "reduce motion" visitor unless the page's own CSS
+  says otherwise, same as any other animation. The fix was the same
+  reduced-motion media block this file already had, extended with
+  `::view-transition-group/old/new(*) { animation: none !important; }`
+  rather than a new one. Direction-aware transitions (the run pager's
+  prev/next now exit and enter from opposite sides) go through the
+  documented `astro:before-swap` event: the pager's own script stamps
+  `data-transition-direction` on the *incoming* document's `<html>` before
+  the swap runs, and `failstate.css` selects on it --- no fork of the
+  router, no per-page JS beyond the one component that needs it.
 - **Build the accessible version first, the enhancement second.** The Run Map
   is a real `<ol>` of links before it's a zig-zag node graph; `LiveDemo` and
   `MarkingModel`'s weight bar keep an aria-live status region or a plain

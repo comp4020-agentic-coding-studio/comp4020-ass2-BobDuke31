@@ -57,24 +57,42 @@ export const collections = {
 
   lectures: defineCollection({
     loader: courseNodeLoader("lectures"),
-    schema: courseNodeSchema
-      .extend({
-        week: weekSchema,
-        date: z.coerce.date(),
-        teachers: teacherRefs.optional(),
-        slides: z
-          .string()
-          .regex(/^\/decks\/[a-z0-9-]+\/$/)
-          .optional(),
-        // Flags a lecture whose page embeds a live <LiveDemo> — distinct from
-        // `slides`, which every deck-bearing week has, since only three of
-        // those four decks carry an interactive widget. Drives the "Live
-        // demo" badge on the lectures grid and the jump-link on the lecture
-        // page itself, so the strongest interactive moments surface before a
-        // visitor has to read to the bottom of the page to find them.
-        interactive: z.boolean().optional(),
-      })
-      .loose(),
+    schema: ({ image }) =>
+      courseNodeSchema
+        .extend({
+          week: weekSchema,
+          date: z.coerce.date(),
+          teachers: teacherRefs.optional(),
+          slides: z
+            .string()
+            .regex(/^\/decks\/[a-z0-9-]+\/$/)
+            .optional(),
+          // Flags a lecture whose page embeds a live <LiveDemo> — distinct from
+          // `slides`, which every deck-bearing week has, since only three of
+          // those four decks carry an interactive widget. Drives the "Live
+          // demo" badge on the lectures grid and the jump-link on the lecture
+          // page itself, so the strongest interactive moments surface before a
+          // visitor has to read to the bottom of the page to find them.
+          interactive: z.boolean().optional(),
+          // Only set where a real photo/screenshot genuinely teaches the
+          // week's idea better than the CSS/SVG treatment already on the
+          // page — not a slot every week fills. Feeds both the lecture-grid
+          // card thumbnail (LecturesGrid.astro) and the lecture page's own
+          // Hero banner (ContentLayout's native heroImage prop), so the same
+          // photo does both jobs instead of being sourced/cropped twice.
+          heroImage: image().optional(),
+          heroImageAlt: z.string().trim().optional(),
+        })
+        .loose()
+        .superRefine((lecture, ctx) => {
+          if (lecture.heroImage && !lecture.heroImageAlt) {
+            ctx.addIssue({
+              code: "custom",
+              path: ["heroImageAlt"],
+              message: "describe the image when one is supplied",
+            });
+          }
+        }),
   }),
 
   people: defineCollection({

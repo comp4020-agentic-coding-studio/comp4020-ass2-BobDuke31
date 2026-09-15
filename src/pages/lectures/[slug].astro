@@ -26,7 +26,13 @@ const title = `Week ${lecture.data.week}: ${lecture.data.title}`;
 const neighbourLabel = (entry: typeof lecture) => `Week ${entry.data.week}: ${entry.data.title}`;
 ---
 
-<ContentLayout title={title} description={lecture.data.description} {...siteConfig}>
+<ContentLayout
+  title={title}
+  description={lecture.data.description}
+  heroImage={lecture.data.heroImage}
+  heroImageAlt={lecture.data.heroImageAlt}
+  {...siteConfig}
+>
   <CollectionPager variant="back" backHref="/lectures/" backLabel="Lectures" />
   <div class="fs-lecture-meta">
     <p class="fs-lecture-date"><strong>{formatCourseDate(lecture.data.date)}</strong></p>
