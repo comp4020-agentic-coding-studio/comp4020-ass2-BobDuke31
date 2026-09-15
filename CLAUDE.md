@@ -111,6 +111,43 @@ Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.
   simultaneous view beats a toggle/radio picker across separate attempts,
   even though the toggle is the easier build --- consistent with never
   taking the easier version by default.
+- **A signal that something interactive exists must sit at every doorway to
+  it, not just at the destination.** The `LiveDemo` widgets on weeks 4/8/12
+  worked correctly but were invisible until a reader had scrolled past the
+  whole lecture to reach them --- nothing on the lectures grid, the top of
+  the lecture page, or the homepage said a demo was there before you hit it.
+  The fix was a single `interactive: boolean` field on the lecture schema
+  (`src/content.config.ts`) driving a small badge or link at every entry
+  point that flag can reach: `⚡ Live demo inside` on the `LecturesGrid`
+  card, a `Try the live demo` button at the top of the lecture page itself
+  linking to the `#try-it` heading the MDX already had, and a "Try it right
+  now" section on the homepage linking straight to the same anchor. One
+  boolean driving several doorway signals to one existing anchor beats
+  hoping a reader scrolls far enough to discover an interactive centerpiece
+  --- discoverability is a property to add at the entrances, not a hope that
+  the destination is good enough to be found.
+- **Tell the reader what to compare; don't leave "notice the difference" to
+  do the work.** The three `LiveDemo` lectures originally closed with one
+  sentence like "notice whether it feels different," which hands the reader
+  the job of inventing their own comparison criteria after the fact. Each
+  was replaced with a **Notice:** list of two or three concrete, specific
+  things to check (a percentage-point gap, a hit-rate change, an exact
+  frame) tied to what that demo's own on-screen states can actually show.
+  A short list of named things to look for is less cognitive effort than a
+  single vague prompt to "notice something," even though the list is more
+  words on the page --- legibility is about how much the reader has to
+  invent, not how little you wrote.
+- **When the point matters more felt live than read about after a
+  click-through, put the widget where the reading already is.** `LiveDemo`
+  on weeks 4/8/12 is now embedded directly in the deck slides, not just
+  linked from the separate lecture page, so presenting or reading the deck
+  reaches the live comparison without leaving the slide (`src/decks/theme.css`
+  ports the site's `.at-button` and the two background tokens `LiveDemo`
+  needs, since a deck never loads `components.css`/`tokens.css` the way the
+  site does). The deck also flags the demo up front, on the title slide, so
+  the room knows it's coming rather than stumbling into it mid-talk. Treat
+  "there's a link to the interactive version" as not yet good enough
+  whenever the interaction is the point being made in that moment.
 - **Verify a delegated agent's "done" before trusting it, every time.** A
   background research task was asked only to read three theme files and
   report back; it instead implemented a real slice of a visual pass itself

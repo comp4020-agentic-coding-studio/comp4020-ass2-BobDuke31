@@ -41,6 +41,29 @@ import { sessionLabels, siteConfig } from "../site-config";
     something, sometimes badly.
   </p>
 
+  <h2>Try it right now</h2>
+  <p>
+    Three lectures don't just describe a design decision — they hand you the
+    exact toy that makes it. Same setup, one variable changed, so the
+    difference is something you feel rather than something you're told.
+  </p>
+  <RevealGroup>
+    <CardGrid columns={3}>
+      <Card title="Week 4 · Checkpoints" href="/lectures/week-04/#try-it">
+        <p class="fs-badge fs-live-tag">⚡ Live demo</p>
+        <p>Same hazard, two respawn policies — punishing versus generous, side by side.</p>
+      </Card>
+      <Card title="Week 8 · Assistance" href="/lectures/week-08/#try-it">
+        <p class="fs-badge fs-live-tag">⚡ Live demo</p>
+        <p>Same timing window, assist on or off — decide whether it's still the same challenge.</p>
+      </Card>
+      <Card title="Week 12 · Feel" href="/lectures/week-12/#try-it">
+        <p class="fs-badge fs-live-tag">⚡ Live demo</p>
+        <p>Same outcome, juiced or not — watch how differently it registers.</p>
+      </Card>
+    </CardGrid>
+  </RevealGroup>
+
   <h2>The route so far</h2>
   <p>
     Twelve weeks, in order — the same run map that lives at {sessionLabels.plural}, shrunk to a
@@ -76,5 +99,9 @@ import { sessionLabels, siteConfig } from "../site-config";
     margin-block: 1rem 0;
     padding: 0;
     list-style: none;
+  }
+
+  .fs-live-tag {
+    margin: 0 0 0.6rem;
   }
 </style>

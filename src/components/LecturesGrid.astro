@@ -2,6 +2,7 @@
 import { getPublishedCollection } from "astro-course-university/content";
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
+import Icon from "astro-theme-university/components/Icon.astro";
 import { formatCourseDate } from "../lib/dates";
 import RevealGroup from "./RevealGroup.astro";
 
@@ -14,6 +15,11 @@ const visible = lectures.sort((a, b) => a.data.date.getTime() - b.data.date.getT
     {
       visible.map((lecture) => (
         <Card headingLevel="h2" title={lecture.data.title} href={`/lectures/${lecture.id}/`}>
+          {lecture.data.interactive && (
+            <p class="fs-badge fs-live-tag">
+              <Icon name="flash" size="0.85em" /> Live demo inside
+            </p>
+          )}
           {lecture.data.description && <p>{lecture.data.description}</p>}
           <p><small>Week {lecture.data.week} · {formatCourseDate(lecture.data.date)}</small></p>
         </Card>
@@ -21,3 +27,9 @@ const visible = lectures.sort((a, b) => a.data.date.getTime() - b.data.date.getT
     }
   </CardGrid>
 </RevealGroup>
+
+<style>
+  .fs-live-tag {
+    margin: 0 0 0.6rem;
+  }
+</style>

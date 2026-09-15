@@ -11,3 +11,221 @@
  * slide class you reach for (`_class: quote`), a code-heavy layout, a
  * background. */
 @import url("astro-theme-university/styles/deck.css");
+
+/* `LiveDemo.astro` (the site's one reusable "trigger, outcome, feedback"
+ * widget --- see src/components/LiveDemo.astro) is embedded directly into
+ * weeks 4/8/12's decks, not just linked to from the lecture page, so the
+ * live interaction is the slide rather than a pointer away from it. Its own
+ * <script> self-imports failstate.css, so every token and animation it needs
+ * arrives with it --- except its controls render `.at-button`, which lives in
+ * astro-theme-university's components.css. Decks never load that file (only
+ * brand CSS + this one), so without this rule an embedded demo's buttons
+ * would fall back to an unstyled native <button>. Restated minimally, using
+ * only tokens deck.css already declares above. */
+.reveal .slides .at-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.4rem;
+  border: 2px solid var(--at-primary);
+  border-radius: var(--at-border-radius);
+  background: var(--at-primary);
+  color: var(--at-on-primary);
+  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition:
+    transform 150ms,
+    background-color 150ms;
+}
+
+.reveal .slides .at-button:hover {
+  transform: translateY(-2px);
+}
+
+.reveal .slides .at-button:active {
+  transform: scale(0.98);
+}
+
+.reveal .slides .at-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* `--at-bg`/`--at-bg-alt` are the other two site tokens `.fs-panel` and
+ * `LiveDemo`'s own styles lean on (a card surface, and the fill behind each
+ * track's start/checkpoint/hazard/finish dot) that live in tokens.css, not
+ * deck.css --- decks never load tokens.css either. A deck is permanently
+ * dark, so this is the dark arm of tokens.css's own `light-dark()` formula
+ * for the two, ported as a flat value rather than copied as a colour, so it
+ * keeps deriving from --at-primary exactly as the site's does. */
+:root {
+  --at-bg: oklch(from var(--at-primary) 12% 0.008 h);
+  --at-bg-alt: oklch(from var(--at-primary) 15% 0.01 h);
+}
+
+/* The twelve-week arc timeline --- shared between week 1 (opens the loop,
+ * lit progressively) and week 12 (closes it, fully cleared). A real ordered
+ * list of arcs, each an ordered list of weeks, so the diagram reads even as
+ * plain text before the coloured banding does anything --- the same
+ * accessible-structure-first shape as RunMap.astro on the site. */
+.fs-arc-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fs-arc {
+  flex: 1 1 0;
+  min-width: 11rem;
+  padding-top: 0.75rem;
+  border-top: 4px solid var(--fs-arc-color, var(--at-primary));
+}
+
+.fs-arc-label {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--fs-arc-color, var(--at-primary));
+}
+
+.fs-arc-weeks {
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fs-week {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.fs-week-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  border: 2px solid var(--fs-arc-color, var(--at-primary));
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--fs-arc-color, var(--at-primary));
+  transition:
+    background-color var(--fs-medium, 320ms) var(--fs-ease, ease),
+    color var(--fs-medium, 320ms) var(--fs-ease, ease);
+}
+
+.fs-week-title {
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+/* Per-arc accent, as classes rather than an inline custom-property so every
+ * colour choice lives in this one stylesheet. */
+.fs-arc--foundations {
+  --fs-arc-color: var(--at-primary);
+}
+
+.fs-arc--design {
+  --fs-arc-color: var(--at-secondary);
+}
+
+.fs-arc--people {
+  --fs-arc-color: var(--at-tertiary);
+}
+
+.fs-arc--craft {
+  --fs-arc-color: var(--fs-danger);
+}
+
+/* The single-node "hero" framing week 1's opening auto-animate step uses
+ * before the full timeline (with its four bordered/spaced arcs) appears. */
+.fs-arc-timeline--solo {
+  justify-content: center;
+}
+
+.fs-arc-timeline--solo .fs-arc {
+  flex: none;
+  min-width: 0;
+  padding-top: 0;
+  border: none;
+}
+
+/* The zoomed-in hero form of a single node, matched by auto-animate against
+ * its small in-timeline form via a shared `data-id`. */
+.fs-week--hero {
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.fs-week--hero .fs-week-num {
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
+}
+
+.fs-week--hero .fs-week-title {
+  font-size: 2.25rem;
+  font-weight: 600;
+}
+
+/* Cleared state: week 12 reprises the same timeline with every node filled
+ * solid instead of outlined --- the same "cleared" treatment RunMap gives a
+ * session already visited on the website. */
+.fs-arc-timeline--cleared .fs-week-num {
+  background: var(--fs-arc-color, var(--at-primary));
+  color: var(--at-on-primary);
+}
+
+.fs-arc-timeline--cleared .fs-week-title {
+  color: var(--at-text-secondary);
+}
+
+/* A short causal chain of boxes and arrows --- week 4's hazard-to-respawn
+ * flow, kept generic enough that another week could reach for the same
+ * shape instead of inventing its own. */
+.fs-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.fs-flow-step {
+  flex: 1 1 12rem;
+}
+
+.fs-flow-step > :last-child {
+  margin-block-end: 0 !important;
+}
+
+.fs-flow-arrow {
+  align-self: center;
+  flex: none;
+  font-size: 2rem;
+  color: var(--at-text-secondary);
+}
+
+/* `.fs-badge` (failstate.css, arriving via each of these decks' own LiveDemo
+ * import) was sized for the site's 16px body text. A deck's own body text
+ * renders at deck.css's `--r-main-font-size` (2.25rem/36px), so the badge's
+ * site-scale 0.75rem would read as a barely-visible sliver next to it on a
+ * projector. Scaled up here, deck-only, rather than touching the shared
+ * token everywhere else on the site still relies on. */
+.reveal .slides .fs-badge {
+  padding: 0.3rem 1rem;
+  font-size: 1.15rem;
+}

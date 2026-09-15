@@ -66,6 +66,13 @@ export const collections = {
           .string()
           .regex(/^\/decks\/[a-z0-9-]+\/$/)
           .optional(),
+        // Flags a lecture whose page embeds a live <LiveDemo> — distinct from
+        // `slides`, which every deck-bearing week has, since only three of
+        // those four decks carry an interactive widget. Drives the "Live
+        // demo" badge on the lectures grid and the jump-link on the lecture
+        // page itself, so the strongest interactive moments surface before a
+        // visitor has to read to the bottom of the page to find them.
+        interactive: z.boolean().optional(),
       })
       .loose(),
   }),

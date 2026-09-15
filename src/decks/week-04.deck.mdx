@@ -1,11 +1,22 @@
 ---
 title: Checkpoints and the Architecture of Mercy
-description: Week 4 deck — punishing versus generous save design
+description: Week 4 deck — punishing versus generous save design, live
 ---
+
+import LiveDemo from "../components/LiveDemo.astro";
 
 # Checkpoints
 
 ## Week 4 · The Architecture of Mercy
+
+<p class="fs-badge">⚡ Live demo inside — you'll drive it yourself</p>
+
+```notes
+Open with the word "mercy" doing real work — every checkpoint policy is a
+decision about how much mercy a design extends, and how much it withholds.
+Flag the live demo up front so the room knows it's coming, not just stumbles
+into it.
+```
 
 ---
 
@@ -14,6 +25,69 @@ description: Week 4 deck — punishing versus generous save design
 Every save policy answers one question:
 
 > when this kills you, what do you have to redo?
+
+"Punishing" and "generous" aren't a difficulty slider — they're two different
+answers to that one question, and both are defensible.
+
+```notes
+Resist the urge to frame punishing as "old" and generous as "modern." Both
+are live choices being made in games released this year.
+```
+
+---
+
+## What the gap actually is
+
+<div class="fs-flow">
+<div class="fs-flow-step fs-panel">
+
+### Hazard
+
+The marker hits the same obstacle, every run, at the same point on the
+track.
+
+</div>
+<div class="fs-flow-arrow">→</div>
+<div class="fs-flow-step fs-panel">
+
+### Punishing
+
+Respawns at **start**. Everything since the last full clear is owed again.
+
+</div>
+<div class="fs-flow-arrow">→</div>
+<div class="fs-flow-step fs-panel">
+
+### Generous
+
+Respawns at the **checkpoint**, right before the hazard. Almost nothing is
+owed again.
+
+</div>
+</div>
+
+```notes
+Same input, two different amounts of debt collected. That's the whole design
+space for this week in one diagram — say it plainly before the table gives it
+history and the demo gives it a body.
+```
+
+---
+
+## The same question, answered four ways
+
+| Game | Checkpoint policy | What death actually costs |
+| --- | --- | --- |
+| *Dark Souls* | Bonfires, spaced apart | The walk back, plus every enemy in between |
+| *Celeste* | Instant, per-screen | Seconds — the last few inputs, nothing more |
+| *Hotline Miami* | Instant, in-room | The current room's execution, restarted clean |
+| Arcade classics | Lives + continues | The run — unless you pay (a coin) to keep it |
+
+```notes
+Four different eras, four different answers. None of these is "the" checkpoint
+system — each is a specific bet about what a repeat playthrough of the same
+five seconds should feel like.
+```
 
 ---
 
@@ -24,17 +98,48 @@ Every save policy answers one question:
 They're two different amounts of a player's time and progress, spent on the
 same mistake.
 
+```notes
+This is the line to slow down on. It reframes the whole week: not a values
+debate, but a specific, measurable design quantity — the exact thing the demo
+is about to make you feel instead of just hear.
+```
+
 ---
 
-## Live in the lecture page
+## Now feel it — same hazard, two policies
 
-- same hazard, same odds
-- one dial: where you respawn
-- try both before you judge either
+<LiveDemo mode="checkpoint" />
+
+Both rows hit the same hazard, on the same click, at the same odds. The only
+thing that ever differs is where each one wakes back up.
+
+```notes
+Let the room actually click it before talking over it. The distance between
+the two markers after a hit *is* the argument the last four slides just made
+in words — point at the gap, don't describe it.
+```
 
 ---
 
 ## Discussion for this week's session
 
-- what is a checkpoint actually forgiving — time, or context?
-- when does generosity remove consequence entirely?
+1. what is a checkpoint actually forgiving — time, or context, or both?
+2. when does generosity remove consequence entirely?
+3. what would a *third* policy look like — neither punishing nor generous?
+
+```notes
+Question 3 is the one to leave them with. Push for a real mechanic, not "medium
+difficulty" — e.g. a checkpoint that costs a resource to use, or one that
+moves depending on how many times you've already died here.
+```
+
+---
+
+{/* _class: impact */}
+
+# The dial is never "hard vs. easy." It's "whose time is this, and how much of it are you owed back?"
+
+```notes
+Closing line — this is the sentence the checkpoint-design assessment in week 9
+will ask them to answer for their own game.
+```
