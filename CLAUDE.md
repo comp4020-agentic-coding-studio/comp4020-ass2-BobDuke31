@@ -76,18 +76,21 @@ Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.
   formats. That reasoning was wrong: the actual blocker was authoring a
   binary file from nothing, not images in general, and `curl`-ing an
   already-openly-licensed file from the network sidesteps it completely.
-  A later pass sourced five real CC BY-SA 4.0 Wikimedia Commons photos ---
-  an arcade cabinet floor (week 3), a real trail-marker signpost (week 4,
-  the "the marked place you return to" that "checkpoint" is a metaphor
-  for), a roguelike's own tiles-mode UI (week 5), an Xbox Adaptive
-  Controller in use (week 8), a pinball machine's lit playfield (week 12,
-  the physical object "juice" describes) --- each chosen because it grounds
-  that week's abstract idea in a concrete referent no CSS/SVG shape would,
-  not to fill a quota. `CREDITS.md` records title/author/licence/source per
-  image; that licence is separate from this project's own declared content
-  licence (`src/site-config.ts`'s `licence`), the same way any embedded
+  A later pass sourced six real CC BY-SA 4.0 Wikimedia Commons photos ---
+  an arcade cabinet floor (weeks 1 and 3, reused as both a deck background
+  and a lecture hero), a real trail-marker signpost (week 4, the "the
+  marked place you return to" that "checkpoint" is a metaphor for), a
+  roguelike's own tiles-mode UI (week 5), an Xbox Adaptive Controller in
+  use (week 8, two distinct photos --- one for the hero, a second for the
+  "Celeste ships a toggle" slide, deliberately not the same image twice in
+  one deck), a pinball machine's lit playfield (week 12, the physical
+  object "juice" describes) --- each chosen because it grounds that week's
+  abstract idea in a concrete referent no CSS/SVG shape would, not to fill
+  a quota. `CREDITS.md` records title/author/licence/source per image; that
+  licence is separate from this project's own declared content licence
+  (`src/site-config.ts`'s `licence`), the same way any embedded
   third-party media's rights stay distinct from the surrounding page's.
-  Don't force an image into a slot that doesn't need one --- seven of
+  Don't force an image into a slot that doesn't need one --- six of
   twelve weeks still carry no photo, on purpose, because nothing sourced
   for them beat the existing treatment. The people/social-image slots
   staying photo-free is a *separate*, still-live decision: a stock photo
@@ -229,3 +232,19 @@ Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.
   matched its own doc comment but nothing in the actual DOM. Read the real
   diff and rerun `pnpm check`/`pnpm build` yourself before calling any
   delegated work complete.
+- **A deck slide is a fixed-size canvas, not a page --- it doesn't reflow,
+  it scales.** "Doesn't fit" on a slide is a real overflow bug, not a zoom
+  problem, so fix the content's size, not the zoom level. This is why
+  `LiveDemo` is sized in `em` and not `rem` --- `rem` blew up on a deck's
+  bigger base font size. The same bug was also why Week 4 looked
+  inconsistent with Weeks 8/12: a missing grid rule was quietly stacking
+  its two-column comparison into one column.
+- **Decks have no back button by default.** astromotion's deck route is
+  just the slide content, nothing else --- no exit link, no prop to add
+  one. `DeckExitLink.astro` fixes this by adding the link straight onto
+  `<body>`, outside the part of the page that gets scaled and clipped.
+- **A broken slide can still pass every check.** A `<div>` wrapped around a
+  `![qr]` directive made astromotion's QR plugin silently skip it --- no
+  build error, no accessibility warning, just a broken image. Only caught
+  by actually looking at a screenshot. Passing checks isn't the same as
+  looking at the thing.
