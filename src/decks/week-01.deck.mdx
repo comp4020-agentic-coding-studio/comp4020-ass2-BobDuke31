@@ -5,6 +5,10 @@ description: Opening lecture deck — the paradox of failure and the shape of th
 
 import "../styles/failstate.css";
 import Icon from "astro-theme-university/components/Icon.astro";
+import DeckExitLink from "../components/DeckExitLink.astro";
+import { withBase } from "astro-theme-university/url";
+
+<DeckExitLink href={withBase("/lectures/week-01/")} label="Week 1" />
 
 {/* _class: hero */}
 

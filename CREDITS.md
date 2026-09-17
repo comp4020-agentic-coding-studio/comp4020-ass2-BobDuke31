@@ -12,6 +12,7 @@ two licences apply to two different works, not one merged one.
 | `trail-marker.jpg` | Swiss hiking trail sign post at Grosse Scheidegg | UCaetano | CC BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:Swiss_hiking_trail_sign_post_at_Grosse_Scheidegg.jpg> |
 | `dcss-screenshot.png` | DCSS Tiles Screenshot | Darkwolf812 | CC BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:DCSS_Tiles_Screenshot.png> |
 | `adaptive-controller.jpg` | InclusiveGameLab Person-Using-Adaptive-Controller 2 | InclusiveGameLab | CC BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:InclusiveGameLab_Person-Using-Adaptive-Controller_2_CC-BY-SA.jpg> |
+| `adaptive-controller-device.jpg` | InclusiveGameLab Xbox-Adaptive-Controller 4 CC-BY-SA 01 | InclusiveGameLab | CC BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:InclusiveGameLab_Xbox-Adaptive-Controller_4_CC-BY-SA_01.jpg> |
 | `pinball.jpg` | Pinball machine Orbitor 1 | Lino Wirag | CC BY-SA 4.0 | <https://commons.wikimedia.org/wiki/File:Pinball_machine_Orbitor_1.jpg> |
 
 Each file lives at `src/assets/images/<file>` for web use (lecture hero

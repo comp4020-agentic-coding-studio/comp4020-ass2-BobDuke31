@@ -5,6 +5,10 @@ description: Week 8 deck — the Celeste Assist Mode debate, live
 
 import LiveDemo from "../components/LiveDemo.astro";
 import Icon from "astro-theme-university/components/Icon.astro";
+import DeckExitLink from "../components/DeckExitLink.astro";
+import { withBase } from "astro-theme-university/url";
+
+<DeckExitLink href={withBase("/lectures/week-08/")} label="Week 8" />
 
 <style>{`
   :root {
@@ -17,13 +21,17 @@ import Icon from "astro-theme-university/components/Icon.astro";
   }
 `}</style>
 
+{/* _class: hero */}
+
 # The Ethics of Assistance
 
-## Week 8
+## Week 8 · Who Decides How Much a Mistake Costs
 
 <p class="fs-badge">⚡ Live demo inside — you'll drive it yourself</p>
 
-<Icon name="accessibility" class="fs-watermark" />
+![bg cover brightness:0.75](./assets/adaptive-controller-device.jpg)
+
+<p class="image-credit">Photo: InclusiveGameLab, CC BY-SA 4.0 — Xbox Adaptive Controller in use</p>
 
 ```notes
 Don't state a position yet. This deck exists to make both sides genuinely
@@ -173,11 +181,13 @@ felt rather than argued.
 
 ## This is week 4 again, wearing a different name
 
+![bg left:24% cover blur:2px brightness:0.8](./assets/adaptive-controller.jpg)
+
 A checkpoint policy is an assist decision — it decides how much of a mistake
 gets forgiven. Assist Mode just makes the same decision explicit, and hands
 it to the player instead of the designer.
 
-<Icon name="puzzle" class="fs-watermark" />
+<p class="image-credit">Photo: InclusiveGameLab, CC BY-SA 4.0</p>
 
 ```notes
 This is the connective tissue of the course, said out loud: weeks 4 and 8 are

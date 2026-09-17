@@ -1,0 +1,29 @@
+---
+// astromotion's deck route (node_modules/astromotion/pages/[...slug].astro)
+// renders <body><slot /></body> with no back/exit affordance and no slot to
+// add one through config --- the only way back to the course site was the
+// browser back button. reveal.js's `.slides` is scaled as a whole
+// (`transform: scale(S)`) and its sections stack via absolute positioning,
+// so a link placed *inside* `.slides` would be scaled/hidden along with
+// everything else. Appended directly to `document.body` instead (a sibling
+// of `.reveal`, outside `.slides`), it escapes both mechanisms entirely ---
+// validated live: it survives forward slide navigation and Reveal's
+// Escape/overview grid mode unchanged. Wording matches the site's own
+// `CollectionPager.astro` back-link convention (`variant="back"`).
+interface Props {
+  href: string;
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<script define:vars={{ href, label }}>
+  if (!document.getElementById("fs-deck-exit")) {
+    const a = document.createElement("a");
+    a.id = "fs-deck-exit";
+    a.href = href;
+    a.textContent = `← Back to ${label}`;
+    document.body.appendChild(a);
+  }
+</script>

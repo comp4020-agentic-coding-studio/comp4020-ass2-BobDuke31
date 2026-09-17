@@ -55,6 +55,45 @@
   transform: none;
 }
 
+/* astromotion's deck route renders nothing but the slide itself, so the only
+ * way back to the course site is this script-injected link (see
+ * `DeckExitLink.astro`) --- appended straight to `<body>`, not `.slides`, so
+ * it sits outside both Reveal's canvas scale and the `.at-button`
+ * restatement just above (scoped to `.reveal .slides .at-button`, which
+ * this link is never a descendant of). Restated to match
+ * astro-theme-university's own `.at-button--ghost` look instead
+ * (components.css): transparent border/fill, accent-coloured text, a soft
+ * accent-tinted hover --- fixed in the top-left corner, clear of Reveal's
+ * own bottom-left control arrows. */
+#fs-deck-exit {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.4rem;
+  border: 2px solid transparent;
+  border-radius: var(--at-border-radius);
+  background: transparent;
+  color: var(--fs-week-accent, var(--at-primary));
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 150ms,
+    transform 150ms;
+}
+
+#fs-deck-exit:hover {
+  background: color-mix(in srgb, var(--fs-week-accent, var(--at-primary)) 12%, transparent);
+  transform: translateY(-2px);
+}
+
+#fs-deck-exit:active {
+  transform: scale(0.98);
+}
+
 /* `--at-bg`/`--at-bg-alt` are the other two site tokens `.fs-panel` and
  * `LiveDemo`'s own styles lean on (a card surface, and the fill behind each
  * track's start/checkpoint/hazard/finish dot) that live in tokens.css, not
@@ -230,6 +269,56 @@
   font-size: 1.15rem;
 }
 
+/* `LiveDemo.astro` sizes itself in `em` (not `rem`) precisely so its whole
+ * visual scale can be tuned from one ancestor `font-size` --- on the website
+ * that ancestor's inherited size is already close to 1rem/16px, so no
+ * override is needed there. In a deck, the ambient body text is deck.css's
+ * `--r-main-font-size` (2.25rem/36px, sized for legibility on a projector),
+ * which would otherwise inflate every `em` in the widget by the same 2.25x
+ * and overflow the fixed 1280x720 slide canvas. Shrunk back down here,
+ * deck-only, per mode rather than as one blanket value: checkpoint and juice
+ * mode stack two full comparison stages (side by side, forced below) and
+ * need to shrink a lot more to fit; assist mode is a single track with one
+ * button and was never close to overflowing, so the same aggressive shrink
+ * would just leave a dead gap under it. Both values were arrived at by
+ * measurement (a temporary Playwright script against every slide's
+ * `scrollHeight`), not guessed. */
+.reveal .slides fs-live-demo[data-mode="checkpoint"],
+.reveal .slides fs-live-demo[data-mode="juice"] {
+  font-size: 0.3em;
+}
+
+.reveal .slides fs-live-demo[data-mode="assist"] {
+  font-size: 0.65em;
+}
+
+/* Checkpoint mode's two respawn tracks default to a vertical stack on the
+ * website too (`.fs-demo-tracks` has no `grid-template-columns` set at any
+ * breakpoint) --- unlike juice mode's `.fs-demo-columns`, which defaults to
+ * a `1fr 1fr` grid and only collapses to one column under its own
+ * `@media (max-width: 32rem)`. Stacking two full stages roughly doubles the
+ * canvas height a single hazard-track needs, which is what made Week 4
+ * overflow while Week 8/12's already-side-by-side layouts did not. Forced to
+ * the same side-by-side layout here, unconditionally: `.slides` is a
+ * fixed-size canvas that reveal.js scales as a whole, so a real narrow browser window
+ * shrinks the scale factor, not the canvas's own unit dimensions --- a
+ * small-viewport single-column fallback would silently reintroduce the same
+ * overflow regardless of the physical window size. These three-class
+ * selectors already out-specificity `LiveDemo.astro`'s own unscoped
+ * `@media (max-width: 32rem)` rule (one class) without `!important`. */
+.reveal .slides .fs-demo-tracks,
+.reveal .slides .fs-demo-columns {
+  grid-template-columns: 1fr 1fr;
+}
+
+.reveal .slides .fs-demo-tracks .fs-demo-stage + .fs-demo-stage,
+.reveal .slides .fs-demo-columns .fs-demo-stage {
+  border-top: none;
+  border-inline-start: 1px solid color-mix(in srgb, var(--at-tertiary) 25%, transparent);
+  padding-inline-start: 1.1em;
+  padding-top: 0;
+}
+
 /* `.image-credit` for an on-slide `![bg ...]` photo caption is already
  * styled by astro-theme-university's own deck.css (bottom-right overlay,
  * white/60% ink, legible over a dimmed photo) --- restating it here would
@@ -370,6 +459,34 @@
   );
 }
 
+/* Two-column `.columns .fs-panel` comparisons (e.g. Week 8's "For"/"Against")
+ * pack a heading plus a short list into a canvas that's already spent on a
+ * second column running alongside it. astro-theme-university's own deck.css
+ * gives every <li> a flat `margin: 0 0 1rem` (16px) and leaves <ul>'s own
+ * block margin at the UA default (1em --- the ambient ~36px deck body size,
+ * since nothing in deck.css sets it), which measured out to a real 777px
+ * scrollHeight against the fixed 720px canvas on Week 8's three-bullet
+ * columns slide. Tightened here, scoped to just this two-column layout,
+ * rather than loosening the shared list rule everywhere it's used. */
+.reveal .slides .columns .fs-panel :is(p, li) {
+  margin-block-end: 0.3rem;
+}
+
+.reveal .slides .columns .fs-panel ul,
+.reveal .slides .columns .fs-panel ol {
+  margin-block: 0.25em 0;
+}
+
+/* astromotion's `theme/base.css` fixes the QR svg at a literal 480x480px
+ * --- fine on its own, but stacked with this slide's own heading, url
+ * caption and closing heading/paragraph it overflows the fixed 720px
+ * canvas. Shrunk for decks only (the QR feature has no website counterpart
+ * to preserve); value confirmed by measurement, not guessed. */
+.reveal .slides .qr-code svg {
+  width: 280px;
+  height: 280px;
+}
+
 /* Ambient texture for the otherwise-flat slides (quote/centered/plain
  * content): a soft accent glow in one corner plus a faint dot grid, both
  * plain background-image layers so they cost nothing in markup. `.impact`
@@ -412,6 +529,27 @@
     var(--fs-week-accent, var(--at-primary)) 85%,
     transparent
   );
+}
+
+/* The final project QR slide's `![qr]` image must render as a *direct*
+ * child of its <section> --- astromotion's remarkDeckQr plugin only
+ * rewrites the QR paragraph into an inline SVG when it finds it among a
+ * section's own top-level children, so it can't be nested inside a
+ * `.fs-panel` wrapper div the way other framed content is (that nesting
+ * silently left a broken image icon in its place instead of the QR code,
+ * caught by screenshot, not by any build check). `.qr-panel` gives the
+ * whole section the same bordered-card look `.fs-panel` uses elsewhere
+ * instead, without a wrapping div and without `.fs-panel`'s own
+ * `position: relative` (which would fight Reveal's required
+ * `position: absolute` on the section). Placed after the ambient-texture
+ * rule above (same specificity, later source wins) so the flat panel
+ * background actually replaces that rule's gradient wash rather than
+ * losing to it silently. */
+.reveal .slides section.qr-panel {
+  border: 1px solid color-mix(in srgb, var(--fs-week-accent, var(--at-tertiary)) 40%, transparent);
+  background: var(--at-bg-alt);
+  background-image: none;
+  box-shadow: 0 1rem 2rem -1.5rem color-mix(in srgb, var(--fs-week-accent, var(--at-primary)) 55%, transparent);
 }
 
 /* A subtle accent duotone on every deck photo --- a hue wash (mix-blend-mode:

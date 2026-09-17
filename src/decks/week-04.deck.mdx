@@ -5,6 +5,10 @@ description: Week 4 deck — punishing versus generous save design, live
 
 import LiveDemo from "../components/LiveDemo.astro";
 import Icon from "astro-theme-university/components/Icon.astro";
+import DeckExitLink from "../components/DeckExitLink.astro";
+import { withBase } from "astro-theme-university/url";
+
+<DeckExitLink href={withBase("/lectures/week-04/")} label="Week 4" />
 
 <style>{`
   :root {
@@ -123,10 +127,12 @@ five seconds should feel like.
 
 ## "Punishing" and "generous" are not vibes
 
+![bg left:24% cover blur:2px brightness:0.8](./assets/trail-marker.jpg)
+
 They're two different amounts of a player's time and progress, spent on the
 same mistake.
 
-<Icon name="hourglass" class="fs-watermark" />
+<p class="image-credit">Photo: UCaetano, CC BY-SA 4.0</p>
 
 ```notes
 This is the line to slow down on. It reframes the whole week: not a values

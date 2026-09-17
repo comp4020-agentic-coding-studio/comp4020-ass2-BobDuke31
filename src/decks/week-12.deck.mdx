@@ -5,6 +5,10 @@ description: Week 12 deck — the capstone lecture on juice and final projects
 
 import LiveDemo from "../components/LiveDemo.astro";
 import Icon from "astro-theme-university/components/Icon.astro";
+import DeckExitLink from "../components/DeckExitLink.astro";
+import { withBase } from "astro-theme-university/url";
+
+<DeckExitLink href={withBase("/lectures/week-12/")} label="Week 12" />
 
 <style>{`
   :root {
@@ -39,12 +43,14 @@ up front so the room knows it's coming.
 
 ## Nothing requires the shake
 
+![bg left:24% cover blur:2px brightness:0.8](./assets/pinball.jpg)
+
 A block breaking needs no screen shake to stop existing.
 
 The logic is identical with or without one — same collision, same removal,
 same score update.
 
-<Icon name="sine-wave" class="fs-watermark" />
+<p class="image-credit">Photo: Lino Wirag, CC BY-SA 4.0</p>
 
 ```notes
 Say this plainly, almost boringly. The point is that the *logic* truly
@@ -177,9 +183,16 @@ depth on one decision over breadth across many.
 
 ---
 
+{/* _class: qr-panel */}
+
 ## Get the brief on your phone
 
 ![qr](https://comp4020-agentic-coding-studio.github.io/comp4020-ass2-BobDuke31/assessments/final-project/)
+
+### The final project brief
+
+Scan now — worth thirty seconds while it's on screen, before it's just a link
+to hunt for later.
 
 ```notes
 Give this thirty seconds before moving on — worth people actually scanning it
@@ -193,6 +206,8 @@ now rather than hunting for the link later.
 # Final projects, today
 
 Three minutes each. Make the fail state legible on sight.
+
+<Icon name="trophy" class="fs-watermark" />
 
 ```notes
 Hand off to the session structure here — this is the last slide before
