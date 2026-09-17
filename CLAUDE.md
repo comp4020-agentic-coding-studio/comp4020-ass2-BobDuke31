@@ -37,12 +37,17 @@ again:
 
 The course is "Fail States" --- how games design losing: checkpoints,
 permadeath, lives, difficulty, and the meaning players make from failure.
-Full identity and the 12-week arc are in `.claude/plans/logical-bouncing-parrot.md`
-(the approved plan); the decisions worth carrying forward as rules:
+Full identity and the 12-week arc were planned before any code was written,
+grounded in real research into failure-design writing and case studies
+(Juul's paradox of failure, checkpoint/permadeath design, Celeste's assist
+mode, arcade economics, flow theory, speedrunning, multiplayer tilt,
+rage-game culture, game feel); the decisions worth carrying forward as
+rules:
 
 - **Interactivity and polish are distributed, not concentrated.** First pass
   put one interactive centerpiece on the homepage and left the rest of the
-  site static; that was corrected before any code was written. The fix wasn't
+  site static; the user pointed this out and asked for a rethink before any
+  component code was written. The fix wasn't
   "add more features" but a small reusable system applied at the point of
   relevant content: one design-token stylesheet (`src/styles/failstate.css`),
   one reusable `<LiveDemo>` component used with three different `mode`s

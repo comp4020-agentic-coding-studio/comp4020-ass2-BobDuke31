@@ -16,24 +16,33 @@ for six weeks, and the same live demos inside the lecture decks too.
 
 ## How I got here
 
-Assignment 1 came back too simple and too linear. I treated that as a
-directing problem, not a scope problem — I'd let the easiest version win
-last time and didn't want to repeat it. The plan
-([`.claude/plans/logical-bouncing-parrot.md`](.claude/plans/logical-bouncing-parrot.md))
-had to hold out for something richer
-([`616b40f`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/616b40f)),
-and even its first draft made the same mistake again — one interactive
-centerpiece on the homepage, everything else static — caught before any
-component code got written, and changed to one small system spread
-wherever it fit instead of one big feature
+Assignment 1 came back too simple and too linear, so before touching the
+new course I put a rule in `CLAUDE.md`: don't default to whatever's
+easiest to build
+([`616b40f`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/616b40f)).
+
+You gave me a rough seed idea — "what happens when players fail in video
+games" — and asked me to research it into a coherent 12-week course before
+proposing a direction. Real searches into failure-design writing and case
+studies (Juul's paradox of failure, checkpoint/permadeath design, Celeste's
+assist mode, arcade economics, flow theory, speedrunning, multiplayer
+tilt, rage-game culture, game feel) grounded the arc, and I drafted a plan
+for you to review before any code was written.
+
+That plan still put one interactive centerpiece on the homepage, leaving
+the rest static — the exact mistake `CLAUDE.md` had just named. You
+pointed that out, said the site needed to feel modern and interactive
+throughout rather than mostly static with one feature, and asked me to
+rethink it before we went ahead. The revision — one small system spread
+across the site — is what actually got built
 ([`4844e77`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/4844e77),
 [`b4250c7`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/b4250c7)).
 
 `pnpm check` ran green throughout. Early on, with no way to see pages
 render, I checked interactive stuff by grepping build output and curling
-pages. Later a temporary Playwright setup — never a real dependency,
-deleted after each use — let me take real screenshots, which caught most
-of the problems below; none would have shown in `pnpm check` alone.
+pages; later a temporary Playwright setup — never a real dependency — let
+me take real screenshots, which caught most of the problems below, none
+visible in `pnpm check` alone.
 
 ## Where I changed my mind
 
@@ -42,18 +51,18 @@ A few times something technically worked but I redid it anyway:
 - The Week 4/12 demos ran fine, but needed the paragraph beside them to
   make sense — the marker teleported instead of moving, and a win and a
   loss flashed the same colour. I made the widgets show their own state,
-  and noticed you also had to click, remember, then click again to compare
-  two options — so I made both run side by side instead
+  then noticed comparing two options meant clicking, remembering, then
+  clicking again — so I made both run side by side instead
   ([`c926d5c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/c926d5c),
   [`5a0b0c6`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/5a0b0c6)).
 - I once asked an agent to just read three files and report back. It came
   back clean — build passing, no accessibility issues — but had quietly
-  written a chunk of unused CSS too. Not wrong, but I only caught it by
-  checking the diff myself.
-- The demos worked but were hidden — nothing told you one existed until
-  you'd scrolled past a whole lecture. I added a badge and jump link at
-  every entry point, and swapped a vague "notice if it feels different"
-  line for a real list of things to check
+  written a chunk of unused CSS too, caught only by checking the diff
+  myself.
+- The demos worked but were hidden until you'd scrolled past a whole
+  lecture. I added a badge and jump link at every entry point, and swapped
+  a vague "notice if it feels different" line for a real list of things to
+  check
   ([`c284559`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/c284559)).
 - Early on I decided the site was "image-free by design" because I
   couldn't generate image files myself. That didn't hold up — I could just
@@ -62,11 +71,11 @@ A few times something technically worked but I redid it anyway:
   ([`b102a3e`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/b102a3e)).
 - Clearest example: a deck visual pass passed every automated check, all
   green ([`57e8158`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/57e8158)).
-  Real screenshots turned up five problems instead: overflowing content, two
-  decks inconsistent from one missing CSS rule, no way back to the site
-  from a deck, slides that were just text over empty space, and a QR code
-  broken by a markup mistake — none visible in a build log. Fixed all five,
-  checked again with screenshots, not just a re-run build
+  Real screenshots turned up five problems instead — overflow, two
+  inconsistent decks from one missing CSS rule, no way back to the site,
+  empty-looking slides, and a QR code broken by a markup mistake — none
+  visible in a build log. Fixed all five, checked again with screenshots,
+  not just a re-run build
   ([`9d785ab`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-BobDuke31/commit/9d785ab)).
 
 ## Before you ship
