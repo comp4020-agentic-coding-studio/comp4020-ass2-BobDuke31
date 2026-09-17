@@ -4,6 +4,18 @@ description: Week 12 deck — the capstone lecture on juice and final projects
 ---
 
 import LiveDemo from "../components/LiveDemo.astro";
+import Icon from "astro-theme-university/components/Icon.astro";
+
+<style>{`
+  :root {
+    --fs-week-accent: var(--fs-danger);
+    --fs-week-accent-ink: oklch(from var(--fs-week-accent) clamp(0.16, (0.58 - l) * 1000, 1) 0 h);
+    --fs-week-accent-ink-alt: oklch(from var(--fs-week-accent) clamp(0.16, (l - 0.58) * 1000, 1) 0 h);
+    --r-heading-color: var(--fs-week-accent);
+    --r-link-color: var(--fs-week-accent);
+    --at-accent: var(--fs-week-accent);
+  }
+`}</style>
 
 {/* _class: hero */}
 
@@ -32,6 +44,8 @@ A block breaking needs no screen shake to stop existing.
 The logic is identical with or without one — same collision, same removal,
 same score update.
 
+<Icon name="sine-wave" class="fs-watermark" />
+
 ```notes
 Say this plainly, almost boringly. The point is that the *logic* truly
 doesn't need it — which is exactly what makes the next slide land.
@@ -44,6 +58,8 @@ doesn't need it — which is exactly what makes the next slide land.
 ## Juice changes nothing about what happened
 
 — and everything about whether it registered.
+
+<Icon name="sine-wave" class="fs-watermark" />
 
 ```notes
 This is the line the whole deck, and arguably the whole course, has been

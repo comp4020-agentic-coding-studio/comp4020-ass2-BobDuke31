@@ -4,6 +4,18 @@ description: Week 4 deck — punishing versus generous save design, live
 ---
 
 import LiveDemo from "../components/LiveDemo.astro";
+import Icon from "astro-theme-university/components/Icon.astro";
+
+<style>{`
+  :root {
+    --fs-week-accent: var(--at-secondary);
+    --fs-week-accent-ink: oklch(from var(--fs-week-accent) clamp(0.16, (0.58 - l) * 1000, 1) 0 h);
+    --fs-week-accent-ink-alt: oklch(from var(--fs-week-accent) clamp(0.16, (l - 0.58) * 1000, 1) 0 h);
+    --r-heading-color: var(--fs-week-accent);
+    --r-link-color: var(--fs-week-accent);
+    --at-accent: var(--fs-week-accent);
+  }
+`}</style>
 
 {/* _class: hero */}
 
@@ -35,6 +47,8 @@ Every save policy answers one question:
 "Punishing" and "generous" aren't a difficulty slider — they're two different
 answers to that one question, and both are defensible.
 
+<Icon name="chat-bubble" class="fs-watermark" />
+
 ```notes
 Resist the urge to frame punishing as "old" and generous as "modern." Both
 are live choices being made in games released this year.
@@ -47,6 +61,8 @@ are live choices being made in games released this year.
 <div class="fs-flow">
 <div class="fs-flow-step fs-panel">
 
+<Icon name="warning-triangle" class="fs-panel-icon" />
+
 ### Hazard
 
 The marker hits the same obstacle, every run, at the same point on the
@@ -56,6 +72,8 @@ track.
 <div class="fs-flow-arrow">→</div>
 <div class="fs-flow-step fs-panel">
 
+<Icon name="restart" class="fs-panel-icon" />
+
 ### Punishing
 
 Respawns at **start**. Everything since the last full clear is owed again.
@@ -63,6 +81,8 @@ Respawns at **start**. Everything since the last full clear is owed again.
 </div>
 <div class="fs-flow-arrow">→</div>
 <div class="fs-flow-step fs-panel">
+
+<Icon name="map-pin" class="fs-panel-icon" />
 
 ### Generous
 
@@ -89,6 +109,8 @@ history and the demo gives it a body.
 | *Hotline Miami* | Instant, in-room | The current room's execution, restarted clean |
 | Arcade classics | Lives + continues | The run — unless you pay (a coin) to keep it |
 
+<Icon name="bonfire" class="fs-watermark" />
+
 ```notes
 Four different eras, four different answers. None of these is "the" checkpoint
 system — each is a specific bet about what a repeat playthrough of the same
@@ -104,10 +126,46 @@ five seconds should feel like.
 They're two different amounts of a player's time and progress, spent on the
 same mistake.
 
+<Icon name="hourglass" class="fs-watermark" />
+
 ```notes
 This is the line to slow down on. It reframes the whole week: not a values
 debate, but a specific, measurable design quantity — the exact thing the demo
 is about to make you feel instead of just hear.
+```
+
+---
+
+{/* _class: centered */}
+{/* _animate: checkpoint-cost */}
+
+## Punishing: owes the whole run back
+
+<div class="fs-assist-track">
+<div class="fs-assist-window" data-id="checkpoint-cost" style="width: 90%" />
+</div>
+
+```notes
+Static first, live next — same shape as week 8's assist-window morph. Don't
+over-explain it, just let the bar read as "nearly everything since the last
+checkpoint."
+```
+
+---
+
+{/* _class: centered */}
+{/* _animate: checkpoint-cost */}
+
+## Generous: owes almost nothing
+
+<div class="fs-assist-track">
+<div class="fs-assist-window" data-id="checkpoint-cost" style="width: 8%" />
+</div>
+
+```notes
+Same hazard, same click — only the respawn point moved. That collapse from
+90% to 8% is the whole argument of this deck, seen once before the live demo
+hands it to the room to drive themselves.
 ```
 
 ---
@@ -129,9 +187,29 @@ in words — point at the gap, don't describe it.
 
 ## Discussion for this week's session
 
-1. what is a checkpoint actually forgiving — time, or context, or both?
-2. when does generosity remove consequence entirely?
-3. what would a *third* policy look like — neither punishing nor generous?
+<div class="fs-flow">
+<div class="fs-flow-step fs-panel">
+
+<span class="fs-week-num">1</span>
+
+what is a checkpoint actually forgiving — time, or context, or both?
+
+</div>
+<div class="fs-flow-step fs-panel">
+
+<span class="fs-week-num">2</span>
+
+when does generosity remove consequence entirely?
+
+</div>
+<div class="fs-flow-step fs-panel">
+
+<span class="fs-week-num">3</span>
+
+what would a *third* policy look like — neither punishing nor generous?
+
+</div>
+</div>
 
 ```notes
 Question 3 is the one to leave them with. Push for a real mechanic, not "medium
@@ -144,6 +222,8 @@ moves depending on how many times you've already died here.
 {/* _class: impact */}
 
 # The dial is never "hard vs. easy." It's "whose time is this, and how much of it are you owed back?"
+
+<Icon name="triangle-flag" class="fs-watermark" />
 
 ```notes
 Closing line — this is the sentence the checkpoint-design assessment in week 9

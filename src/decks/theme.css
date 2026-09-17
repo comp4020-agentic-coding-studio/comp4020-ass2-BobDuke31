@@ -119,10 +119,10 @@
   width: 1.9rem;
   height: 1.9rem;
   border-radius: 50%;
-  border: 2px solid var(--fs-arc-color, var(--at-primary));
+  border: 2px solid var(--fs-arc-color, var(--fs-week-accent, var(--at-primary)));
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--fs-arc-color, var(--at-primary));
+  color: var(--fs-arc-color, var(--fs-week-accent, var(--at-primary)));
   transition:
     background-color var(--fs-medium, 320ms) var(--fs-ease, ease),
     color var(--fs-medium, 320ms) var(--fs-ease, ease);
@@ -245,7 +245,7 @@
   position: relative;
   height: 2.5rem;
   background: var(--at-bg-alt);
-  border: 2px solid var(--at-tertiary);
+  border: 2px solid var(--fs-week-accent, var(--at-tertiary));
   border-radius: var(--at-border-radius);
   overflow: hidden;
 }
@@ -254,7 +254,7 @@
   position: absolute;
   inset-block: 0;
   left: 0;
-  background: var(--at-primary);
+  background: var(--fs-week-accent, var(--at-primary));
 }
 
 /* Same auto-animate trick for week 12's "juice" argument --- a meter that
@@ -265,7 +265,7 @@
   position: relative;
   height: 2.5rem;
   background: var(--at-bg-alt);
-  border: 2px solid var(--at-tertiary);
+  border: 2px solid var(--fs-week-accent, var(--at-tertiary));
   border-radius: var(--at-border-radius);
   overflow: hidden;
 }
@@ -274,5 +274,242 @@
   position: absolute;
   inset-block: 0;
   left: 0;
-  background: var(--fs-danger, var(--at-secondary));
+  background: var(--fs-week-accent, var(--fs-danger, var(--at-secondary)));
+}
+
+/* --- Visual design pass: per-week accent system ---------------------------
+ *
+ * Weeks 4/8/12 set --fs-week-accent (and its matching ink pair, computed
+ * with the same oklch clamp formula deck.css uses for --at-on-primary) in a
+ * small inline <style> at the top of their own .deck.mdx --- the one place a
+ * single page-scoped custom-property override reaches every slide without
+ * a class on each one. Week 1 sets nothing, so every rule below falls back
+ * to --at-primary/--at-on-primary and looks exactly as it did before this
+ * pass. --at-primary itself stays untouched: the arc-timeline's four arc
+ * colours (above) are literal var(--at-primary/secondary/tertiary/
+ * --fs-danger) references, so reassigning --at-primary per-deck would also
+ * recolour week 1's "Foundations" column on whichever deck did it.
+ */
+
+.reveal .slides section h1 {
+  background-color: var(--fs-week-accent, var(--at-primary));
+  color: var(--fs-week-accent-ink, var(--at-on-primary));
+}
+
+.reveal .slides section.hero h1::after {
+  background: var(--fs-week-accent, var(--at-primary));
+}
+
+.reveal .slides section h1 + h2 {
+  margin: 0 0 2rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-week-accent, var(--at-primary));
+}
+
+.reveal .slides section.impact {
+  background-color: var(--fs-week-accent, var(--at-primary));
+  color: var(--fs-week-accent-ink, var(--at-on-primary));
+}
+
+.reveal .slides section.impact :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--fs-week-accent-ink, var(--at-on-primary));
+}
+
+.reveal .slides section.impact :is(strong, em) {
+  color: var(--fs-week-accent-ink-alt, var(--at-on-primary-alt));
+}
+
+.reveal .slides section.impact code {
+  background: var(--fs-week-accent-ink, var(--at-on-primary));
+  color: var(--fs-week-accent, var(--at-primary));
+  border-color: var(--fs-week-accent-ink, var(--at-on-primary));
+}
+
+.reveal .slides section.impact a {
+  color: var(--fs-week-accent-ink-alt, var(--at-on-primary-alt));
+}
+
+.reveal .slides section.quote blockquote {
+  border-block-start-color: var(--fs-week-accent, var(--at-primary));
+}
+
+.reveal .slides section.quote blockquote cite {
+  color: var(--fs-week-accent, var(--at-primary));
+}
+
+.reveal .slides section blockquote::before {
+  border-block-start-color: var(--fs-week-accent, var(--at-accent));
+}
+
+.reveal .slides table :is(thead, tbody) th {
+  background: color-mix(in srgb, var(--fs-week-accent, var(--at-primary)) 14%, transparent);
+  color: var(--fs-week-accent, var(--at-primary));
+}
+
+.reveal .slides table thead th {
+  border-block-end-color: color-mix(in srgb, var(--fs-week-accent, var(--at-primary)) 55%, transparent);
+}
+
+.reveal .slides .qr-code span {
+  color: var(--fs-week-accent, var(--at-primary));
+}
+
+.reveal .slides .fs-panel {
+  border-color: color-mix(in srgb, var(--fs-week-accent, var(--at-tertiary)) 40%, transparent);
+  box-shadow: 0 1rem 2rem -1.5rem color-mix(in srgb, var(--fs-week-accent, var(--at-primary)) 55%, transparent);
+}
+
+.reveal .slides .fs-panel::before {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--fs-week-accent, var(--at-primary)) 55%, transparent),
+    transparent 40%
+  );
+}
+
+/* Ambient texture for the otherwise-flat slides (quote/centered/plain
+ * content): a soft accent glow in one corner plus a faint dot grid, both
+ * plain background-image layers so they cost nothing in markup. `.impact`
+ * is excluded explicitly --- its own background-image would otherwise lose
+ * to this rule's higher specificity (two classes + a type beats one class
+ * + a type), and a flat brand fill doesn't need more texture on top of it.
+ * `.hero` needs no exclusion: its `.slide-bg` photo is a positioned child
+ * that already paints over the section's own background. Sections are
+ * already `position: absolute` (Reveal core, reveal.css) --- that's a valid
+ * containing block on its own, so this deliberately never sets `position`
+ * itself; doing so would fight Reveal's own slide-stacking mechanism. */
+.reveal .slides section:not(.impact) {
+  background-image:
+    radial-gradient(
+      ellipse 60% 50% at 100% 0%,
+      color-mix(in srgb, var(--fs-week-accent, var(--at-primary)) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      color-mix(in srgb, var(--at-light-grey) 10%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 100% 100%, 28px 28px;
+  background-repeat: no-repeat, repeat;
+}
+
+/* A left-edge accent spine on the same plain slides, `.impact` excluded for
+ * the same reason (it's already a solid accent fill, a stripe on top of it
+ * reads as clutter, not texture). */
+.reveal .slides section:not(.impact)::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 4px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--fs-week-accent, var(--at-primary)) 15%,
+    var(--fs-week-accent, var(--at-primary)) 85%,
+    transparent
+  );
+}
+
+/* A subtle accent duotone on every deck photo --- a hue wash (mix-blend-mode:
+ * color leaves luminance alone, so it recolours without darkening) that ties
+ * a real photograph into whichever week's palette it's sitting in, sitting
+ * between the raw image and any scrim already layered on top of it (.hero's
+ * own text-legibility gradient paints later, since it belongs to the section
+ * and .slide-bg's own children resolve within its stacking level first). */
+.reveal .slides .slide-bg::after,
+.reveal .slides .split-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--fs-week-accent, var(--at-primary));
+  mix-blend-mode: color;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.reveal .slides .split-image {
+  position: relative;
+  border-inline: 3px solid var(--fs-week-accent, var(--at-primary));
+}
+
+/* --- Visual design pass: filling empty content slides ---------------------
+ *
+ * deck.css's default `align-content: start` packs every non-h1 slide's body
+ * to the top of its box (its own `place-content: center` override only fires
+ * for `:has(h1)`, i.e. title/impact slides), so a short content slide keeps a
+ * dead zone below whatever little it has. Rather than fight that packing
+ * (which would make headings jump position slide-to-slide depending on
+ * content length --- worse for scanability mid-talk than a fixed top edge),
+ * the rules below give short slides real content to fill that space with:
+ * an icon inside an existing .fs-panel, a proper icon list, a reused
+ * .fs-flow card row, and a large decorative watermark glyph for slides that
+ * are just a quote or a sentence. */
+
+/* A leading icon inside a .fs-panel, sitting above its ### heading --- reuses
+ * the existing bordered-card component rather than a new panel variant. */
+.fs-panel-icon {
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-block-end: 0.75rem;
+  color: var(--fs-week-accent, var(--at-primary));
+}
+
+/* A numbered list turned into a card row: .fs-flow reused with no
+ * .fs-flow-arrow dividers, each card a .fs-flow-step.fs-panel carrying a
+ * reused .fs-week-num chip (here just a list position, not a real week
+ * number) and this same .fs-panel-icon slot. */
+.fs-flow-step .fs-week-num {
+  margin-block-end: 0.75rem;
+}
+
+/* A short list of distinct concept glyphs. Authored as literal per-item
+ * markup rather than a CSS ::marker swap, since the whole point is that each
+ * item's icon differs from the next. */
+.fs-icon-list {
+  display: grid;
+  gap: 0.9rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fs-icon-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.fs-icon-list-glyph {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-block-start: 0.2rem;
+  color: var(--fs-week-accent, var(--at-primary));
+}
+
+/* A large, near-invisible decorative glyph anchored to a slide's corner ---
+ * fills the dead space align-content:start leaves under a short
+ * quote/impact/plain-paragraph slide without competing with the text it
+ * sits behind. Sections are already `position: absolute` (Reveal core,
+ * reveal.css), a valid containing block on their own, so this never touches
+ * `position` on the section itself. */
+.fs-watermark {
+  position: absolute;
+  right: 2rem;
+  bottom: 1.5rem;
+  width: 9rem;
+  height: 9rem;
+  color: var(--fs-week-accent, var(--at-primary));
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.reveal .slides section.impact .fs-watermark {
+  color: var(--fs-week-accent-ink, var(--at-on-primary));
+  opacity: 0.16;
 }

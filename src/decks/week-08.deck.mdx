@@ -4,12 +4,26 @@ description: Week 8 deck — the Celeste Assist Mode debate, live
 ---
 
 import LiveDemo from "../components/LiveDemo.astro";
+import Icon from "astro-theme-university/components/Icon.astro";
+
+<style>{`
+  :root {
+    --fs-week-accent: var(--at-tertiary);
+    --fs-week-accent-ink: oklch(from var(--fs-week-accent) clamp(0.16, (0.58 - l) * 1000, 1) 0 h);
+    --fs-week-accent-ink-alt: oklch(from var(--fs-week-accent) clamp(0.16, (l - 0.58) * 1000, 1) 0 h);
+    --r-heading-color: var(--fs-week-accent);
+    --r-link-color: var(--fs-week-accent);
+    --at-accent: var(--fs-week-accent);
+  }
+`}</style>
 
 # The Ethics of Assistance
 
 ## Week 8
 
 <p class="fs-badge">⚡ Live demo inside — you'll drive it yourself</p>
+
+<Icon name="accessibility" class="fs-watermark" />
 
 ```notes
 Don't state a position yet. This deck exists to make both sides genuinely
@@ -43,6 +57,8 @@ not an abstract kindness.
 
 # Is that a different game?
 
+<Icon name="gamepad" class="fs-watermark" />
+
 ```notes
 Let this sit exactly as long as week 1's opening question did. It's doing the
 same job.
@@ -55,6 +71,8 @@ same job.
 <div class="columns">
 <div class="fs-panel">
 
+<Icon name="thumbs-up" class="fs-panel-icon" />
+
 ### For
 
 - a timing window is an arbitrary number, not a moral line
@@ -64,6 +82,8 @@ same job.
 
 </div>
 <div class="fs-panel">
+
+<Icon name="thumbs-down" class="fs-panel-icon" />
 
 ### Against
 
@@ -93,6 +113,8 @@ week is teaching, not "pick a side."
 | *God of War* | Graduated difficulty tiers | The player, up front |
 | *Hades* | God Mode, woven into the story itself | The player, and the fiction |
 
+<Icon name="switch-on" class="fs-watermark" />
+
 ```notes
 Hades is the one to dwell on: it's the only row where the assistance option
 is also a narrative device (Nyx explicitly grants you the boon). Ask whether
@@ -117,6 +139,7 @@ narrow.
 
 ---
 
+{/* _class: centered */}
 {/* _animate: assist */}
 
 ## The same window, widened
@@ -154,6 +177,8 @@ A checkpoint policy is an assist decision — it decides how much of a mistake
 gets forgiven. Assist Mode just makes the same decision explicit, and hands
 it to the player instead of the designer.
 
+<Icon name="puzzle" class="fs-watermark" />
+
 ```notes
 This is the connective tissue of the course, said out loud: weeks 4 and 8 are
 the same design question — who absorbs the cost of failure — asked about two
@@ -164,9 +189,29 @@ different levers.
 
 ## Today's structured argument
 
-1. you'll be assigned a side
-2. defend the side you hold **less** strongly
-3. the goal isn't to win — it's to make that side's best possible case
+<div class="fs-flow">
+<div class="fs-flow-step fs-panel">
+
+<span class="fs-week-num">1</span>
+
+you'll be assigned a side
+
+</div>
+<div class="fs-flow-step fs-panel">
+
+<span class="fs-week-num">2</span>
+
+defend the side you hold **less** strongly
+
+</div>
+<div class="fs-flow-step fs-panel">
+
+<span class="fs-week-num">3</span>
+
+the goal isn't to win — it's to make that side's best possible case
+
+</div>
+</div>
 
 ```notes
 Set expectations before they break into groups: this only works if everyone
